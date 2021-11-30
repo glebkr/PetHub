@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private val base_url = "http://192.168.43.170:3000"
+    private val base_url = "https://pethub-project.herokuapp.com"
     private var retrofit: Retrofit? = null
 
     fun getClient(baseUrl: String?) : Retrofit {

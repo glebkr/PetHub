@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/firstFragment"
+        android:id="@+id/homeFragment"
         android:title="Home"
         android:icon="@drawable/ic_home" />
     <item
-        android:id="@+id/secondFragment"
+        android:id="@+id/favoriteFragment"
         android:title="Favorite"
         android:icon="@drawable/ic_favorite" />
     <item
@@ -15,11 +15,11 @@
         android:title="Add"
         android:icon="@drawable/ic_add_circle" />
     <item
-        android:id="@+id/fourthFragment"
+        android:id="@+id/mapsFragment"
         android:title="Map"
         android:icon="@drawable/ic_map" />
     <item
-        android:id="@+id/loginFragment"
+        android:id="@+id/profileFragment"
         android:title="Profile"
         android:icon="@drawable/ic_person" />
 

@@ -3,17 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/firstFragment">
-    <fragment
-        android:id="@+id/firstFragment"
-        android:name="com.example.pethub.firstFragment"
-        android:label="fragment_first"
-        tools:layout="@layout/fragment_first" />
-    <fragment
-        android:id="@+id/secondFragment"
-        android:name="com.example.pethub.secondFragment"
-        android:label="fragment_second"
-        tools:layout="@layout/fragment_second" />
+    app:startDestination="@id/homeFragment">
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.pethub.loginFragment"
@@ -34,4 +24,19 @@
         android:name="com.example.pethub.profileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/mapsFragment"
+        android:name="com.example.pethub.MapsFragment"
+        android:label="fragment_maps"
+        tools:layout="@layout/fragment_maps" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.pethub.homeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.example.pethub.favoriteFragment"
+        android:label="fragment_favorite"
+        tools:layout="@layout/fragment_favorite" />
 </navigation>

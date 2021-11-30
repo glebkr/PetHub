@@ -2,20 +2,24 @@ package com.example.pethub
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.*
+import android.widget.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.example.pethub.R
 import com.example.pethub.retrofit.LoginRequest
 import com.example.pethub.retrofit.LoginResponse
 import com.example.pethub.retrofit.RetrofitClient
 import com.example.pethub.retrofit.TokenResponse
+import com.example.pethub.viewmodel.ViewModel
+import okhttp3.internal.waitMillis
 import retrofit2.Call
 import retrofit2.Response
 import java.lang.Exception
@@ -24,9 +28,7 @@ import java.lang.Exception
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-lateinit var username: EditText
-lateinit var password: EditText
-lateinit var btnLogin: Button
+
 
 /**
  * A simple [Fragment] subclass.
@@ -37,6 +39,12 @@ class loginFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    lateinit var username: EditText
+    lateinit var password: EditText
+    lateinit var btnLogin: Button
+    private var progress : ProgressBar? = null
+    private val viewModel by activityViewModels<ViewModel>()
+    //private val viewModel = ViewModelProvider(this).get(ViewModel::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,74 +60,42 @@ class loginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val v = inflater.inflate(R.layout.fragment_login, container, false)
-        username = v.findViewById(R.id.edUserLogin)
-        password = v.findViewById(R.id.editUserPassword)
-        btnLogin = v.findViewById(R.id.button)
+        return inflater.inflate(R.layout.fragment_login, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        username = view.findViewById(R.id.edUserLogin)
+        password = view.findViewById(R.id.editUserPassword)
+        btnLogin = view.findViewById(R.id.button)
+        progress = view.findViewById(R.id.progress)
+        val sharedPrefs =
+            activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        viewModel.token.observe(viewLifecycleOwner, Observer {
+            if (it.isNotEmpty()) {
+                findNavController().navigate(R.id.profileFragment)
+                viewModel._token.postValue("")
+            }
+        })
         btnLogin.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                login()
-            }
-
-        })
-        return v
-    }
-
-    private fun getUsers() {
-        RetrofitClient.apiDataInterface.getUsers().enqueue(object : retrofit2.Callback<MutableList<LoginResponse>> {
-            override fun onResponse(
-                call: Call<MutableList<LoginResponse>>,
-                response: Response<MutableList<LoginResponse>>
-            ) {
-                val resp = response.body()
-                Toast.makeText(activity!!.applicationContext, "Success", Toast.LENGTH_LONG).show()
-            }
-
-            override fun onFailure(call: Call<MutableList<LoginResponse>>, t: Throwable) {
-                Toast.makeText(activity!!.applicationContext, "Failed", Toast.LENGTH_LONG).show()
-            }
-
-        })
-    }
-
-    private fun login() {
-        val loginRequest = LoginRequest(username.text.toString().trim(), password.text.toString().trim())
-        val loginResponseCall = RetrofitClient.apiDataInterface.login(loginRequest)
-        loginResponseCall.enqueue(object : retrofit2.Callback<TokenResponse> {
-            override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
-                try {
-                    val token = response.body()
-                    val status = response.code()
-                    if (status != 401) {
-                        val sharedPrefs = activity!!.getSharedPreferences(
-                            "SharedPrefs",
-                            AppCompatActivity.MODE_PRIVATE
-                        )
-                        sharedPrefs.edit().putString("token", token!!.access_token).apply()
-                        Toast.makeText(activity!!.applicationContext, "Success", Toast.LENGTH_LONG)
-                            .show()
-                        val manager = fragmentManager
-                        val transaction = manager!!.beginTransaction()
-                        transaction.replace(R.id.fragment_container, profileFragment())
-                        transaction.commit()
-                    } else {
-                        Toast.makeText(
-                            activity!!.applicationContext,
-                            "Invalid login or password",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                } catch (ex: Exception) {
-                    Toast.makeText(activity?.applicationContext, "Error", Toast.LENGTH_LONG).show()
+                val token = sharedPrefs?.getString("token", "")
+                val loginRequest =
+                    LoginRequest(username.text.toString().trim(), password.text.toString().trim())
+                if (token!!.isNotEmpty()) {
+                    findNavController().navigate(R.id.profileFragment)
+                } else {
+                    viewModel.login(loginRequest)
                 }
-            }
 
-            override fun onFailure(call: Call<TokenResponse>, t: Throwable) {
-                Toast.makeText(activity!!.applicationContext, "Failed", Toast.LENGTH_LONG).show()
-                val manager = fragmentManager
-                val transaction = manager!!.beginTransaction()
-                transaction.replace(R.id.fragment_container, profileFragment())
-                transaction.commit()
+            }
+        })
+
+        viewModel.progress.observe(viewLifecycleOwner, Observer {
+            if (it == true) {
+                progress?.visibility = ProgressBar.VISIBLE
+            } else {
+                progress?.visibility = ProgressBar.INVISIBLE
             }
         })
     }
