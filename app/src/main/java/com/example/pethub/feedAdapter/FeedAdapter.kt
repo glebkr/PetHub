@@ -8,7 +8,7 @@ import com.example.pethub.R
 import com.example.pethub.retrofit.Ad
 import kotlinx.android.synthetic.main.feed_item.view.*
 
-class FeedAdapter(var list: MutableList<Ad>, var favAdList: MutableList<Ad>) : RecyclerView.Adapter<FeedAdapter.Holder>() {
+class FeedAdapter(var list: MutableList<Ad>) : RecyclerView.Adapter<FeedAdapter.Holder>() {
     lateinit var mListener : FeedAdapter.OnClickListener
     inner class Holder(itemView: View, listener : OnClickListener) : RecyclerView.ViewHolder(itemView) {
         init {

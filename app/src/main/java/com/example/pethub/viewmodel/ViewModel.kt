@@ -26,6 +26,8 @@ class ViewModel(application: Application): AndroidViewModel(application) {
     val adList = _adList
     val _favAdList = MutableLiveData<MutableList<Ad>>()
     val favAdList = _favAdList
+    val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading : LiveData<Boolean> = _isLoading
 
     fun login(loginInfo: LoginInfo) {
         viewModelScope.launch {
@@ -41,6 +43,7 @@ class ViewModel(application: Application): AndroidViewModel(application) {
                             _token.postValue(resp?.access_token)
                         } else {
                             Toast.makeText(context, "Неверный логин или пароль", Toast.LENGTH_SHORT).show()
+                            _isLoading.postValue(false)
                         }
                     }
 

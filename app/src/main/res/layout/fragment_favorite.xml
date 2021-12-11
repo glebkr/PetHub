@@ -7,7 +7,6 @@
     tools:context=".favoriteFragment"
     tools:viewBindingIgnore="false">
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvFavorite"
         android:layout_width="0dp"

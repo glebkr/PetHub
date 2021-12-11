@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pethub.R
 import com.example.pethub.retrofit.Ad
+import com.example.pethub.retrofit.AdPost
 import kotlinx.android.synthetic.main.feed_item.view.*
 
 class FavoriteAdapter(var list: MutableList<Ad>) : RecyclerView.Adapter<FavoriteAdapter.Holder>() {
@@ -15,11 +16,15 @@ class FavoriteAdapter(var list: MutableList<Ad>) : RecyclerView.Adapter<Favorite
             itemView.IVfavorite.setOnClickListener {
                 listener.onImageViewClick(adapterPosition)
             }
+            itemView.setOnClickListener {
+                listener.onItemClick(adapterPosition)
+            }
         }
     }
 
     interface OnClickListener {
         fun onImageViewClick(position: Int)
+        fun onItemClick(position: Int)
     }
 
     fun setOnImageViewClickListener(listener: OnClickListener) {

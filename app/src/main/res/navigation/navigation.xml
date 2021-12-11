@@ -39,4 +39,9 @@
         android:name="com.example.pethub.signUpFragment"
         android:label="fragment_sign_up"
         tools:layout="@layout/fragment_sign_up" />
+    <fragment
+        android:id="@+id/descriptionFragment"
+        android:name="com.example.pethub.descriptionFragment"
+        android:label="fragment_description"
+        tools:layout="@layout/fragment_description" />
 </navigation>

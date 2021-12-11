@@ -52,13 +52,15 @@ class homeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progress?.visibility = ProgressBar.VISIBLE
-        val adapter = FeedAdapter(mutableListOf(), mutableListOf())
+        val adapter = FeedAdapter(mutableListOf())
         viewModel.getAds()
         rvFeed.layoutManager = LinearLayoutManager(requireContext())
         rvFeed.adapter = adapter
         viewModel.adList.observe(viewLifecycleOwner, Observer {
-            adapter.updateList(it)
-            progress?.visibility = ProgressBar.INVISIBLE
+            if (!it.isNullOrEmpty()) {
+                adapter.updateList(it)
+                progress?.visibility = ProgressBar.INVISIBLE
+            }
         })
         val sharedPrefs =
             activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
@@ -90,7 +92,15 @@ class homeFragment : Fragment() {
             }
 
             override fun onItemClick(position: Int) {
-                findNavController().navigate(R.id.favoriteFragment)
+                viewModel.adList.observe(viewLifecycleOwner, Observer {
+                    sharedPrefs.edit().apply {
+                        putString("title", it[position].title)
+                        putString("price", it[position].price)
+                        putString("city", it[position].x_coord)
+                    }.apply()
+                        // ragment.newInstance(it[position].title, it[position].price, it[position].x_coord)
+                })
+                findNavController().navigate(R.id.descriptionFragment)
             }
         })
     }

@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
@@ -50,13 +52,29 @@ class addFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         val token = sharedPrefs?.getString("token", "")
+        val items = arrayOf("Продажа", "Покупка", "Утерян", "Найден")
+        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, items)
+        spinner.adapter = spinnerAdapter
+        var type : Int? = null
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, v: View?, position: Int, id: Long) {
+                when (position) {
+                    0 -> type = 1
+                    1 -> type = 2
+                    2 -> type = 3
+                    3 -> type = 4
+                }
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+        }
         if (token!!.isNotEmpty()) {
             bthAdd.setOnClickListener {
                 val title = titleTv.text.toString().trim()
                 val location = tvLocation.text.toString().trim()
                 val price = priceTv.text.toString().trim()
                 if (title.isNotEmpty() && location.isNotEmpty() && price.isNotEmpty()) {
-                    val adData = AdPost(title, 1, 1, price, location, "Пушкина 33")
+                    val adData = AdPost(title, type!!, 1, price, location, "Пушкина 33")
                     viewModel.postAd("Bearer " + token, adData)
                     titleTv.text = null
                     tvLocation.text = null
@@ -67,6 +85,7 @@ class addFragment : Fragment() {
             }
         } else {
             findNavController().navigate(R.id.loginFragment)
+            Toast.makeText(requireContext(), "Пожалуйста, авторизуйтесь", Toast.LENGTH_SHORT).show()
         }
 
     }

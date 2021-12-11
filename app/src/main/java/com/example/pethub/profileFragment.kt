@@ -10,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.pethub.viewmodel.ViewModel
-import kotlinx.android.synthetic.main.fragment_favorite.*
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.progress
 
@@ -46,7 +45,7 @@ class profileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         progress?.visibility = ProgressBar.VISIBLE
         viewModel.userInfo.observe(viewLifecycleOwner, Observer {
-            tvUserName?.text = it.name
+            tvName?.text = it.name
             tvCity?.text = "Город: " + it.city
             tvPhone?.text = "Номер телефона: " + it.phone
             tvEmail?.text = "Электронная почта: " + it.email

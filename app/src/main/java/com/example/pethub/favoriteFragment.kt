@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
@@ -75,6 +76,18 @@ class favoriteFragment : Fragment() {
                 adapter.list.removeAt(position)
                 adapter.notifyItemRemoved(position)
                 findNavController().navigate(R.id.favoriteFragment)
+            }
+
+            override fun onItemClick(position: Int) {
+                viewModel.favAdList.observe(viewLifecycleOwner, Observer {
+                    sharedPrefs.edit().apply {
+                        putString("title", it[position].title)
+                        putString("price", it[position].price)
+                        putString("city", it[position].x_coord)
+                    }.apply()
+                    //descriptionFragment.newInstance(it[position].title, it[position].price, it[position].x_coord)
+                })
+                findNavController().navigate(R.id.descriptionFragment)
             }
 
         })

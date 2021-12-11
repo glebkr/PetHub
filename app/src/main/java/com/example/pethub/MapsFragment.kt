@@ -33,16 +33,20 @@ class MapsFragment : Fragment() {
          * user has installed Google Play services and returned to the app.
          */
         val minsk = LatLng(53.9, 27.5590)
-        val m = googleMap.addMarker(MarkerOptions().position(minsk).title("Marker in Minsk").draggable(true))
+        val m = googleMap.addMarker(MarkerOptions().position(minsk).title("Marker in Minsk"))
+        googleMap.addMarker(MarkerOptions().position(LatLng(53.87, 27.5)).title("Marker"))
+        googleMap.addMarker(MarkerOptions().position(LatLng(53.93, 27.6)).title("Marker"))
+        googleMap.addMarker(MarkerOptions().position(LatLng(53.885, 27.650)).title("Marker"))
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(minsk, 11.0F))
         /*
         googleMap.setOnMarkerClickListener ( object : GoogleMap.OnMarkerClickListener {
             override fun onMarkerClick(p0: Marker): Boolean {
-                Toast.makeText(context, m.title, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, m?.title, Toast.LENGTH_SHORT).show()
                 return true
             }
-        } )
+        })
          */
+
     }
 
     override fun onCreateView(

@@ -55,12 +55,14 @@ class loginFragment : Fragment() {
                 progress?.visibility = ProgressBar.INVISIBLE
             }
         })
-
         btnSignIn.setOnClickListener {
             progress?.visibility = ProgressBar.VISIBLE
             val loginInfo =
                 LoginInfo(edUserLogin.text.toString().trim(), etUserPassword.text.toString().trim())
             viewModel.login(loginInfo)
+            viewModel.isLoading.observe(viewLifecycleOwner, Observer {
+                progress?.visibility = ProgressBar.INVISIBLE
+            })
         }
         btnSignUp.setOnClickListener {
             findNavController().navigate(R.id.signUpFragment)
