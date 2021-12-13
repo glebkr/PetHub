@@ -50,8 +50,8 @@ class descriptionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         tvAdTitle.text = sharedPrefs?.getString("title", "")
-        tvAdPrice.text = sharedPrefs?.getString("price", "")
-        tvAdCity.text = sharedPrefs?.getString("city", "")
+        tvAdPrice.text = "Цена: " + sharedPrefs?.getString("price", "")
+        tvAdCity.text = "Город: " + sharedPrefs?.getString("city", "")
         //Toast.makeText(requireContext(), "${arguments?.getString("title")}", Toast.LENGTH_SHORT).show()
         /*
         arguments?.let {

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
@@ -62,6 +63,37 @@ class homeFragment : Fragment() {
                 progress?.visibility = ProgressBar.INVISIBLE
             }
         })
+
+        fun filter(text: String?) {
+            viewModel.adList.observe(viewLifecycleOwner, Observer {
+                if (!it.isNullOrEmpty()) {
+                    adapter.updateList(it)
+                }
+            })
+            val filteredList = mutableListOf<Ad>()
+            for (item in adapter.list) {
+                if (text?.let { item.title!!.lowercase().contains(it.lowercase()) } == true ) {
+                    filteredList.add(item)
+                }
+            }
+            if (filteredList.isNotEmpty()) {
+                adapter.updateList(filteredList)
+            }
+        }
+
+        searchView.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filter(newText)
+                return false
+            }
+
+        })
+
         val sharedPrefs =
             activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         val token = sharedPrefs?.getString("token", "")
