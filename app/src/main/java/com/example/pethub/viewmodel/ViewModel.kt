@@ -23,9 +23,13 @@ class ViewModel(application: Application): AndroidViewModel(application) {
     val _token = MutableLiveData<String>()
     val token : LiveData<String> = _token
     val _adList = MutableLiveData<MutableList<Ad>>()
-    val adList = _adList
+    val adList : LiveData<MutableList<Ad>> = _adList
     val _favAdList = MutableLiveData<MutableList<Ad>>()
-    val favAdList = _favAdList
+    val favAdList : LiveData<MutableList<Ad>> = _favAdList
+    val _kindList = MutableLiveData<MutableList<Kind>>()
+    val kindList : LiveData<MutableList<Kind>> = _kindList
+    val _filteredList = MutableLiveData<MutableList<Ad>>()
+    val filteredList : LiveData<MutableList<Ad>> = _filteredList
     val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading : LiveData<Boolean> = _isLoading
 
@@ -202,6 +206,117 @@ class ViewModel(application: Application): AndroidViewModel(application) {
                 })
             } catch (ex: Exception) {
                 Toast.makeText(context, "Ошибка", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun getKinds() {
+        viewModelScope.launch {
+            try {
+                rep.getKinds().enqueue(object : retrofit2.Callback<MutableList<Kind>> {
+                    override fun onResponse(
+                        Call: Call<MutableList<Kind>>,
+                        response: Response<MutableList<Kind>>
+                    ) {
+                        val resp = response.body()
+                        _kindList.postValue(resp)
+                    }
+
+                    override fun onFailure(Call: Call<MutableList<Kind>>, response: Throwable) {
+                        Toast.makeText(context, "Неудача, попробуйте еще раз", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+
+                })
+            } catch (ex: Exception) {
+                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    fun fullFilter(type: Int, kind: Int) {
+        viewModelScope.launch {
+            try {
+                rep.fullFilter(type, kind).enqueue(object : retrofit2.Callback<MutableList<Ad>> {
+                    override fun onResponse(
+                        Call: Call<MutableList<Ad>>,
+                        response: Response<MutableList<Ad>>
+                    ) {
+                        val resp = response.body()
+                        if (resp!!.size != 0) {
+                            _filteredList.postValue(resp)
+                        } else {
+                            Toast.makeText(context, "Ничего не найдено", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    override fun onFailure(Call: Call<MutableList<Ad>>, response: Throwable) {
+                        Toast.makeText(context, "Неудача, попробуйте еще раз", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+
+                })
+            } catch (ex: Exception) {
+
+                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    fun filterWithType(type: Int) {
+        viewModelScope.launch {
+            try {
+                rep.filterWithType(type).enqueue(object : retrofit2.Callback<MutableList<Ad>> {
+                    override fun onResponse(
+                        Call: Call<MutableList<Ad>>,
+                        response: Response<MutableList<Ad>>
+                    ) {
+                        val resp = response.body()
+                        if (resp!!.size != 0) {
+                            _filteredList.postValue(resp)
+                        } else {
+                            Toast.makeText(context, "Ничего не найдено", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    override fun onFailure(Call: Call<MutableList<Ad>>, response: Throwable) {
+                        Toast.makeText(context, "Неудача, попробуйте еще раз", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+
+                })
+            } catch (ex: Exception) {
+
+                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    fun filterWithKind(kind: Int) {
+        viewModelScope.launch {
+            try {
+                rep.filterWithKind(kind).enqueue(object : retrofit2.Callback<MutableList<Ad>> {
+                    override fun onResponse(
+                        Call: Call<MutableList<Ad>>,
+                        response: Response<MutableList<Ad>>
+                    ) {
+                        val resp = response.body()
+                        if (resp!!.size != 0) {
+                            _filteredList.postValue(resp)
+                        } else {
+                            Toast.makeText(context, "Ничего не найдено", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    override fun onFailure(Call: Call<MutableList<Ad>>, response: Throwable) {
+                        Toast.makeText(context, "Неудача, попробуйте еще раз", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+
+                })
+            } catch (ex: Exception) {
+
+                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
             }
         }
     }

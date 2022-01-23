@@ -1,5 +1,6 @@
 package com.example.pethub.retrofit
 
+import com.example.pethub.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,11 +13,11 @@ object RetrofitClient {
     fun getClient(baseUrl: String?) : Retrofit {
         if (retrofit == null) {
             val interceptor = HttpLoggingInterceptor()
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+            interceptor.setLevel(if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE )
             val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
             retrofit = Retrofit.Builder()
                 .baseUrl(baseUrl)
-                //.client(client)
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
         }

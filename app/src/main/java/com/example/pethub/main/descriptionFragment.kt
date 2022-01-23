@@ -1,15 +1,13 @@
-package com.example.pethub
+package com.example.pethub.main
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import com.example.pethub.R
 import com.example.pethub.viewmodel.ViewModel
 import kotlinx.android.synthetic.main.fragment_description.*
 

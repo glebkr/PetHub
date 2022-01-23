@@ -1,21 +1,23 @@
-package com.example.pethub
+package com.example.pethub.main
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
-import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.pethub.R
 import com.example.pethub.feedAdapter.FeedAdapter
 import com.example.pethub.retrofit.Ad
 import com.example.pethub.viewmodel.ViewModel
+import com.kotlinpermissions.ifNotNullOrElse
 import kotlinx.android.synthetic.main.fragment_home.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -36,6 +38,7 @@ class homeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
@@ -50,19 +53,26 @@ class homeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.search).isVisible = true
+        super.onPrepareOptionsMenu(menu)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        progress?.visibility = ProgressBar.VISIBLE
         val adapter = FeedAdapter(mutableListOf())
-        viewModel.getAds()
-        rvFeed.layoutManager = LinearLayoutManager(requireContext())
-        rvFeed.adapter = adapter
+        if (viewModel._adList.value == null) {
+            progress?.visibility = ProgressBar.VISIBLE
+            viewModel.getAds()
+        }
         viewModel.adList.observe(viewLifecycleOwner, Observer {
             if (!it.isNullOrEmpty()) {
                 adapter.updateList(it)
                 progress?.visibility = ProgressBar.INVISIBLE
             }
+            viewModel._adList.postValue(null)
         })
+        rvFeed.layoutManager = LinearLayoutManager(requireContext())
+        rvFeed.adapter = adapter
 
         fun filter(text: String?) {
             viewModel.adList.observe(viewLifecycleOwner, Observer {

@@ -28,4 +28,17 @@ interface ApiDataInterface {
     @POST("/user")
     fun signUp(@Body signUpInfo: SignUpInfo) : Call<Void>
 
+    @GET("/kind")
+    fun getKinds() : Call<MutableList<Kind>>
+
+    @GET("/ad")
+    fun fullFilter(@Query("type") type: Int, @Query("kind") kind: Int) : Call<MutableList<Ad>>
+
+    @GET("/ad")
+    fun filterWithType(@Query("type") type: Int) : Call<MutableList<Ad>>
+
+    @GET("/ad")
+    fun filterWithKind(@Query("kind") type: Int) : Call<MutableList<Ad>>
+
+
  }

@@ -1,22 +1,17 @@
-package com.example.pethub
+package com.example.pethub.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.Toolbar
 import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.pethub.retrofit.*
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.pethub.R
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Call
-import retrofit2.Response
-import javax.security.auth.callback.Callback
-import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,12 +27,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val sharedPrefs = this.getSharedPreferences("SharedPrefs", MODE_PRIVATE)
-        sharedPrefs
-            .edit()
-            .putString("token", "")
-            .apply()
-        findNavController(R.id.fragment_container).navigate(R.id.loginFragment)
+        when (item.itemId) {
+            R.id.search -> findNavController(R.id.fragment_container).navigate(R.id.filterFragment)
+            R.id.logOut -> {
+                val sharedPrefs = this.getSharedPreferences("SharedPrefs", MODE_PRIVATE)
+                sharedPrefs
+                    .edit()
+                    .putString("token", "")
+                    .apply()
+                findNavController(R.id.fragment_container).navigate(R.id.loginFragment)
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
 

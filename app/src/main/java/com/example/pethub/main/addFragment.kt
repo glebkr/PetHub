@@ -1,5 +1,6 @@
-package com.example.pethub
+package com.example.pethub.main
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,13 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.example.pethub.R
 import com.example.pethub.retrofit.AdPost
 import com.example.pethub.viewmodel.ViewModel
-import kotlinx.android.synthetic.main.feed_item.*
 import kotlinx.android.synthetic.main.fragment_add.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -52,17 +54,36 @@ class addFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         val token = sharedPrefs?.getString("token", "")
-        val items = arrayOf("Продажа", "Покупка", "Утерян", "Найден")
-        val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, items)
+        val items = arrayOf("Выберите тип","Продажа", "Покупка", "Утерян", "Найден")
+        val spinnerAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, items) {
+            override fun isEnabled(position: Int): Boolean {
+                return position != 0
+            }
+
+            override fun getDropDownView(
+                position: Int,
+                convertView: View?,
+                parent: ViewGroup
+            ): View {
+                val view = super.getDropDownView(position, convertView, parent) as TextView
+                if (position == 0) {
+                    view.setTextColor(Color.GRAY)
+                } else {
+                    view.setTextColor(Color.BLACK)
+                }
+                return view
+            }
+        }
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = spinnerAdapter
         var type : Int? = null
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, v: View?, position: Int, id: Long) {
                 when (position) {
-                    0 -> type = 1
-                    1 -> type = 2
-                    2 -> type = 3
-                    3 -> type = 4
+                    1 -> type = 1
+                    2 -> type = 2
+                    3 -> type = 3
+                    4 -> type = 4
                 }
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -73,12 +94,14 @@ class addFragment : Fragment() {
                 val title = titleTv.text.toString().trim()
                 val location = tvLocation.text.toString().trim()
                 val price = priceTv.text.toString().trim()
-                if (title.isNotEmpty() && location.isNotEmpty() && price.isNotEmpty()) {
+                if (title.isNotEmpty() && location.isNotEmpty() && price.isNotEmpty() && type != null) {
                     val adData = AdPost(title, type!!, 1, price, location, "Пушкина 33")
                     viewModel.postAd("Bearer " + token, adData)
                     titleTv.text = null
                     tvLocation.text = null
                     priceTv.text = null
+                } else if (type == null) {
+                    Toast.makeText(requireContext(), "Выберите тип объявления", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(requireContext(), "Заполните все поля", Toast.LENGTH_SHORT).show()
                 }
