@@ -18,6 +18,7 @@ import com.example.pethub.feedAdapter.FeedAdapter
 import com.example.pethub.retrofit.Ad
 import com.example.pethub.viewmodel.ViewModel
 import com.kotlinpermissions.ifNotNullOrElse
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_home.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -35,6 +36,7 @@ class homeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private val viewModel by activityViewModels<ViewModel>()
+    private val secondAdList = mutableListOf<Ad>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +61,19 @@ class homeFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = FeedAdapter(mutableListOf())
+
+        val adapter = FeedAdapter(mutableListOf(), mutableListOf())
+        val sharedPrefs =
+            activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        val token = sharedPrefs?.getString("token", "")
+        if (token!!.isNotEmpty()) {
+            viewModel.getFavAds("Bearer " + token)
+            viewModel.favAdList.observe(viewLifecycleOwner, Observer {
+                if (!it.isNullOrEmpty()) {
+                    adapter.updateFavList(it)
+                }
+            })
+        }
         if (viewModel._adList.value == null) {
             progress?.visibility = ProgressBar.VISIBLE
             viewModel.getAds()
@@ -67,6 +81,7 @@ class homeFragment : Fragment() {
         viewModel.adList.observe(viewLifecycleOwner, Observer {
             if (!it.isNullOrEmpty()) {
                 adapter.updateList(it)
+                secondAdList.addAll(adapter.list)
                 progress?.visibility = ProgressBar.INVISIBLE
             }
             viewModel._adList.postValue(null)
@@ -104,28 +119,22 @@ class homeFragment : Fragment() {
 
         })
 
-        val sharedPrefs =
-            activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
-        val token = sharedPrefs?.getString("token", "")
-        if (token!!.isNotEmpty()) {
-            viewModel.getFavAds("Bearer " + token)
-        }
         adapter.setOnItemClickListener(object : FeedAdapter.OnClickListener {
             override fun onImageViewClick(position: Int) {
                     if (token.isNotEmpty()) {
-                        viewModel.adList.observe(viewLifecycleOwner, Observer { adList ->
-                            val adId = adList[position].id
-                            viewModel.favAdList.observe(viewLifecycleOwner, Observer { favAdList ->
-                                val idList = mutableListOf<Int>()
-                                for (i in 0 until favAdList.size) {
-                                    idList.add(favAdList[i].id!!)
-                                }
+                        val adId = secondAdList[position].id
+                        viewModel.favAdList.observe(viewLifecycleOwner, Observer { favAdList ->
+                            val idList = mutableListOf<Int>()
+                            for (i in 0 until favAdList.size) {
+                                idList.add(favAdList[i].id!!)
+                            }
+                            if (adId != null) {
                                 if (idList.contains(adId)) {
-                                    viewModel.delFavAd("Bearer " + token, adId!!)
+                                    viewModel.delFavAd("Bearer " + token, adId)
                                 } else {
-                                    viewModel.postFavAd("Bearer " + token, adId!!)
+                                    viewModel.postFavAd("Bearer " + token, adId)
                                 }
-                            })
+                            }
                         })
                     } else {
                         findNavController().navigate(R.id.loginFragment)
@@ -134,15 +143,13 @@ class homeFragment : Fragment() {
             }
 
             override fun onItemClick(position: Int) {
-                viewModel.adList.observe(viewLifecycleOwner, Observer {
-                    sharedPrefs.edit().apply {
-                        putString("title", it[position].title)
-                        putString("price", it[position].price)
-                        putString("city", it[position].x_coord)
-                    }.apply()
-                        // ragment.newInstance(it[position].title, it[position].price, it[position].x_coord)
-                })
-                findNavController().navigate(R.id.descriptionFragment)
+                sharedPrefs.edit().apply {
+                    putString("title", secondAdList[position].title)
+                    putString("price", secondAdList[position].price)
+                    putString("city", secondAdList[position].x_coord)
+                }.apply()
+                // ragment.newInstance(it[position].title, it[position].price, it[position].x_coord)
+               findNavController().navigate(R.id.descriptionFragment)
             }
         })
     }

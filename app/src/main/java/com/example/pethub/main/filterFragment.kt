@@ -6,10 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.core.view.get
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -143,22 +141,55 @@ class filterFragment : Fragment() {
                 viewModel.filterWithType(type!!)
             } else if (type == null && kind != null) {
                 viewModel.filterWithKind(kind!!)
-            } else {
+            } else if (type == null && kind == null) {
                 viewModel.getAds()
                 viewModel.adList.observe(viewLifecycleOwner, Observer {
                     if (!it.isNullOrEmpty()) {
+                        val newList = mutableListOf<Ad>()
+                        fun filter(text: String?) {
+                            for (item in it) {
+                                if (item.title!!.lowercase().contains(text!!.lowercase())) {
+                                    newList.add(item)
+                                }
+                            }
+                        }
+                        if (searchView.query.isNotEmpty()) {
+                            filter(searchView.query.toString())
+                        }
+                        if (newList.isNotEmpty()) {
+                            viewModel._adList.postValue(newList)
+                        } else {
+                            viewModel._adList.postValue(it)
+                        }
                         findNavController().navigate(R.id.homeFragment)
+                        //viewModel._adList.postValue(null)
+                        //newList.clear()
                     }
-                    viewModel._adList.postValue(null)
                 } )
             }
 
             viewModel.filteredList.observe(viewLifecycleOwner, Observer {
                 if (!it.isNullOrEmpty()) {
-                    viewModel._adList.postValue(it)
+                    val newList = mutableListOf<Ad>()
+                    fun filter(text: String?) {
+                        for (item in it) {
+                            if (item.title!!.lowercase().contains(text!!.lowercase())) {
+                                newList.add(item)
+                            }
+                        }
+                    }
+                    if (searchView.query.isNotEmpty()) {
+                        filter(searchView.query.toString())
+                    }
+                    if (newList.isNotEmpty()) {
+                        viewModel._adList.postValue(newList)
+                    } else {
+                        viewModel._adList.postValue(it)
+                    }
                     findNavController().navigate(R.id.homeFragment)
+                    viewModel._filteredList.postValue(null)
+                    //newList.clear()
                 }
-                viewModel._filteredList.postValue(null)
             })
         }
     }
