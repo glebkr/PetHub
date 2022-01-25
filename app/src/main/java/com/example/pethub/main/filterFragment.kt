@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -17,6 +18,7 @@ import com.example.pethub.retrofit.Kind
 import com.example.pethub.viewmodel.ViewModel
 import kotlinx.android.synthetic.main.fragment_filter.*
 import okhttp3.internal.assertThreadDoesntHoldLock
+import okhttp3.internal.userAgent
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -34,6 +36,8 @@ class filterFragment : Fragment() {
     private var param2: String? = null
     val viewModel by activityViewModels<ViewModel>()
     var kindList = mutableListOf<String>("Выберите вид")
+    val fullKindList = mutableListOf<Kind>()
+    val newList = mutableListOf<Ad>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +56,29 @@ class filterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        if (!sharedPrefs?.getString("query", "").isNullOrEmpty()) {
+            searchView.setQuery(sharedPrefs?.getString("query", ""), false)
+        }
+
+        if (!sharedPrefs?.getString("type", "").isNullOrEmpty()) {
+            spinnerType.post {
+                run {
+                    spinnerType.setSelection(sharedPrefs?.getString("type", "")!!.toInt())
+                }
+            }
+        }
+        if (!sharedPrefs?.getString("kind", "").toString().isNullOrEmpty()) {
+            spinnerKind.post {
+                run {
+                    spinnerKind.setSelection(sharedPrefs?.getString("kind", "")!!.toInt())
+                }
+            }
+        }
+
         val typeItems = arrayOf("Выберите тип","Продажа", "Покупка", "Утерян", "Найден")
+
         val spinnerTypeAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, typeItems) {
             override fun isEnabled(position: Int): Boolean {
                 return position != 0
@@ -97,6 +123,7 @@ class filterFragment : Fragment() {
                     item.title?.let { title -> kindList.add(title)}
                 }
             }
+            fullKindList.addAll(it)
         })
         val spinnerKindAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, kindList) {
             override fun isEnabled(position: Int): Boolean {
@@ -122,11 +149,12 @@ class filterFragment : Fragment() {
         var kind: Int? = null
         spinnerKind.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, v: View?, position: Int, id: Long) {
-                for (i in 1 until kindList.size) {
-                    when (position) {
-                        i -> kind = i
+                for (item in fullKindList) {
+                    if (item.title == kindList[position]) {
+                        kind = item.id
                     }
                 }
+
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -135,6 +163,42 @@ class filterFragment : Fragment() {
         }
 
         resultBtn.setOnClickListener {
+            sharedPrefs!!.edit().apply {
+                putString("query", "")
+                putString("type", "")
+                putString("kind", "")
+            }.apply()
+            fun addToSharedPrefs() {
+                if (!searchView.query.toString().isNullOrEmpty()) {
+                    sharedPrefs.edit().apply {
+                        putString("query", searchView.query.toString())
+                    }.apply()
+                }
+                if (spinnerType.selectedItemId.toInt() != 0) {
+                    sharedPrefs.edit().apply {
+                        putString("type", "$type")
+                    }.apply()
+                }
+                if (spinnerKind.selectedItemId.toInt() != 0) {
+                    sharedPrefs.edit().apply {
+                        putString("kind", "$kind")
+                    }.apply()
+                }
+            }
+            fun filter (text: String?, list: MutableList<Ad>) {
+                for (item in list) {
+                    if (item.title!!.lowercase().contains(text!!.lowercase()) && (!newList.contains(item))) {
+                        newList.add(item)
+                    }
+                }
+                if (newList.isNotEmpty()) {
+                    addToSharedPrefs()
+                    viewModel._adList.postValue(newList)
+                    findNavController().navigate(R.id.homeFragment)
+                } else {
+                    Toast.makeText(requireContext(), "Ничего не найдено", Toast.LENGTH_LONG).show()
+                }
+            }
             if (type != null && kind != null) {
                 viewModel.fullFilter(type!!, kind!!)
             } else if (type != null && kind == null) {
@@ -145,50 +209,28 @@ class filterFragment : Fragment() {
                 viewModel.getAds()
                 viewModel.adList.observe(viewLifecycleOwner, Observer {
                     if (!it.isNullOrEmpty()) {
-                        val newList = mutableListOf<Ad>()
-                        fun filter(text: String?) {
-                            for (item in it) {
-                                if (item.title!!.lowercase().contains(text!!.lowercase())) {
-                                    newList.add(item)
-                                }
-                            }
-                        }
                         if (searchView.query.isNotEmpty()) {
-                            filter(searchView.query.toString())
-                        }
-                        if (newList.isNotEmpty()) {
-                            viewModel._adList.postValue(newList)
+                            filter(searchView.query.toString(), it)
                         } else {
+                            addToSharedPrefs()
                             viewModel._adList.postValue(it)
+                            findNavController().navigate(R.id.homeFragment)
                         }
-                        findNavController().navigate(R.id.homeFragment)
                         //viewModel._adList.postValue(null)
-                        //newList.clear()
                     }
                 } )
             }
 
             viewModel.filteredList.observe(viewLifecycleOwner, Observer {
                 if (!it.isNullOrEmpty()) {
-                    val newList = mutableListOf<Ad>()
-                    fun filter(text: String?) {
-                        for (item in it) {
-                            if (item.title!!.lowercase().contains(text!!.lowercase())) {
-                                newList.add(item)
-                            }
-                        }
-                    }
                     if (searchView.query.isNotEmpty()) {
-                        filter(searchView.query.toString())
-                    }
-                    if (newList.isNotEmpty()) {
-                        viewModel._adList.postValue(newList)
+                        filter(searchView.query.toString(), it)
                     } else {
+                        addToSharedPrefs()
                         viewModel._adList.postValue(it)
+                        findNavController().navigate(R.id.homeFragment)
                     }
-                    findNavController().navigate(R.id.homeFragment)
                     viewModel._filteredList.postValue(null)
-                    //newList.clear()
                 }
             })
         }

@@ -56,15 +56,18 @@ class homeFragment : Fragment() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.search).isVisible = true
+        val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        menu.findItem(R.id.clear_filter).isVisible = !sharedPrefs?.getString("query", "").isNullOrEmpty() || !sharedPrefs?.getString("type", "").isNullOrEmpty() ||
+                !sharedPrefs?.getString("kind", "").isNullOrEmpty()
+        menu.findItem(R.id.filter).isVisible = true
         super.onPrepareOptionsMenu(menu)
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         val adapter = FeedAdapter(mutableListOf(), mutableListOf())
-        val sharedPrefs =
-            activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         val token = sharedPrefs?.getString("token", "")
         if (token!!.isNotEmpty()) {
             viewModel.getFavAds("Bearer " + token)
@@ -84,11 +87,11 @@ class homeFragment : Fragment() {
                 secondAdList.addAll(adapter.list)
                 progress?.visibility = ProgressBar.INVISIBLE
             }
-            viewModel._adList.postValue(null)
         })
         rvFeed.layoutManager = LinearLayoutManager(requireContext())
         rvFeed.adapter = adapter
 
+        /*
         fun filter(text: String?) {
             viewModel.adList.observe(viewLifecycleOwner, Observer {
                 if (!it.isNullOrEmpty()) {
@@ -118,6 +121,7 @@ class homeFragment : Fragment() {
             }
 
         })
+         */
 
         adapter.setOnItemClickListener(object : FeedAdapter.OnClickListener {
             override fun onImageViewClick(position: Int) {
@@ -143,12 +147,12 @@ class homeFragment : Fragment() {
             }
 
             override fun onItemClick(position: Int) {
-                sharedPrefs.edit().apply {
+                sharedPrefs!!.edit().apply {
                     putString("title", secondAdList[position].title)
                     putString("price", secondAdList[position].price)
                     putString("city", secondAdList[position].x_coord)
                 }.apply()
-                // ragment.newInstance(it[position].title, it[position].price, it[position].x_coord)
+                // argument.newInstance(it[position].title, it[position].price, it[position].x_coord)
                findNavController().navigate(R.id.descriptionFragment)
             }
         })

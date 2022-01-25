@@ -51,17 +51,27 @@ class favoriteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         progress?.visibility = ProgressBar.VISIBLE
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         val token = sharedPrefs?.getString("token", "")
         val adapter = FavoriteAdapter(mutableListOf())
         rvFavorite.adapter = adapter
         rvFavorite.layoutManager = LinearLayoutManager(requireContext())
+        noFavsTv.visibility = View.INVISIBLE
         if (token!!.isNotEmpty()) {
+            viewModel._favAdList.postValue(null)
             viewModel.getFavAds("Bearer " + token)
             viewModel.favAdList.observe(viewLifecycleOwner, Observer {
-                adapter.updateList(it)
-                progress?.visibility = ProgressBar.INVISIBLE
+                if (!it.isNullOrEmpty()) {
+                    adapter.updateList(it)
+                    noFavsTv.visibility = View.INVISIBLE
+                    progress?.visibility = ProgressBar.INVISIBLE
+                } else {
+                    noFavsTv.visibility = View.VISIBLE
+                    progress?.visibility = ProgressBar.INVISIBLE
+                }
+                //viewModel._favAdList.postValue(null)
             })
         } else {
             findNavController().navigate(R.id.loginFragment)
@@ -69,13 +79,13 @@ class favoriteFragment : Fragment() {
         }
         adapter.setOnImageViewClickListener(object : FavoriteAdapter.OnClickListener {
             override fun onImageViewClick(position: Int) {
-                viewModel.getFavAds("Bearer " + token)
-                viewModel.favAdList.observe(viewLifecycleOwner, Observer {
-                    viewModel.delFavAd("Bearer " + token, it[position].id!!)
-                })
+                //viewModel._favAdList.postValue(null)
+                //viewModel.getFavAds("Bearer " + token)
+                viewModel.delFavAd("Bearer " + token, adapter.list[position].id!!)
+                noFavsTv.visibility = View.INVISIBLE
                 adapter.list.removeAt(position)
                 adapter.notifyItemRemoved(position)
-                findNavController().navigate(R.id.favoriteFragment)
+                //findNavController().navigate(R.id.favoriteFragment)
             }
 
             override fun onItemClick(position: Int) {

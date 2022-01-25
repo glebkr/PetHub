@@ -17,12 +17,12 @@ class FeedAdapter(var list: MutableList<Ad>, val favList: MutableList<Ad>) : Rec
                 idList.add(item.id)
             }
             itemView.IVfavorite.setOnClickListener {
+                listener.onImageViewClick(adapterPosition)
                 if (!idList.contains(list[adapterPosition].id)) {
                     itemView.IVfavorite.setImageResource(R.drawable.ic_favorite_pressed)
                 } else {
                     itemView.IVfavorite.setImageResource(R.drawable.ic_favorite_border)
                 }
-                listener.onImageViewClick(adapterPosition)
             }
             itemView.setOnClickListener {
                 listener.onItemClick(adapterPosition)
