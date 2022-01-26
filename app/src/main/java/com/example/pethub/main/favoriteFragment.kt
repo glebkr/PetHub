@@ -52,26 +52,34 @@ class favoriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel._favAdList.postValue(null)
         progress?.visibility = ProgressBar.VISIBLE
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         val token = sharedPrefs?.getString("token", "")
         val adapter = FavoriteAdapter(mutableListOf())
         rvFavorite.adapter = adapter
         rvFavorite.layoutManager = LinearLayoutManager(requireContext())
-        noFavsTv.visibility = View.INVISIBLE
+        if (progress?.visibility == ProgressBar.VISIBLE) {
+            noFavsTv.visibility = View.INVISIBLE
+        } else if (adapter.list.size == 0) {
+            noFavsTv.visibility = View.VISIBLE
+        }
         if (token!!.isNotEmpty()) {
-            viewModel._favAdList.postValue(null)
             viewModel.getFavAds("Bearer " + token)
             viewModel.favAdList.observe(viewLifecycleOwner, Observer {
                 if (!it.isNullOrEmpty()) {
-                    adapter.updateList(it)
-                    noFavsTv.visibility = View.INVISIBLE
-                    progress?.visibility = ProgressBar.INVISIBLE
+                    if (it.size > 0) {
+                        adapter.updateList(it)
+                        noFavsTv.visibility = View.INVISIBLE
+                        progress?.visibility = ProgressBar.INVISIBLE
+                    }
                 } else {
-                    noFavsTv.visibility = View.VISIBLE
                     progress?.visibility = ProgressBar.INVISIBLE
+                    if (adapter.list.size == 0) {
+                        noFavsTv.visibility = View.VISIBLE
+                    }
                 }
-                //viewModel._favAdList.postValue(null)
+                viewModel._favAdList.postValue(null)
             })
         } else {
             findNavController().navigate(R.id.loginFragment)
@@ -79,24 +87,23 @@ class favoriteFragment : Fragment() {
         }
         adapter.setOnImageViewClickListener(object : FavoriteAdapter.OnClickListener {
             override fun onImageViewClick(position: Int) {
-                //viewModel._favAdList.postValue(null)
-                //viewModel.getFavAds("Bearer " + token)
                 viewModel.delFavAd("Bearer " + token, adapter.list[position].id!!)
-                noFavsTv.visibility = View.INVISIBLE
                 adapter.list.removeAt(position)
                 adapter.notifyItemRemoved(position)
-                //findNavController().navigate(R.id.favoriteFragment)
+                if (adapter.list.size == 0) {
+                    noFavsTv.visibility = View.VISIBLE
+                } else {
+                    noFavsTv.visibility = View.INVISIBLE
+                }
             }
 
             override fun onItemClick(position: Int) {
-                viewModel.favAdList.observe(viewLifecycleOwner, Observer {
-                    sharedPrefs.edit().apply {
-                        putString("title", it[position].title)
-                        putString("price", it[position].price)
-                        putString("city", it[position].x_coord)
-                    }.apply()
+                sharedPrefs.edit().apply {
+                    putString("title", adapter.list[position].title)
+                    putString("price", adapter.list[position].price)
+                    putString("city", adapter.list[position].x_coord)
+                }.apply()
                     //descriptionFragment.newInstance(it[position].title, it[position].price, it[position].x_coord)
-                })
                 findNavController().navigate(R.id.descriptionFragment)
             }
 

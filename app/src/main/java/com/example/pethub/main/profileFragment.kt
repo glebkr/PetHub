@@ -46,22 +46,14 @@ class profileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         progress?.visibility = ProgressBar.VISIBLE
         viewModel.userInfo.observe(viewLifecycleOwner, Observer {
-            tvName?.text = it.name
-            tvCity?.text = "Город: " + it.city
-            tvPhone?.text = "Номер телефона: " + it.phone
-            tvEmail?.text = "Электронная почта: " + it.email
-            progress?.visibility = ProgressBar.INVISIBLE
-        })
-        /*
-        viewModel.progress.observe(viewLifecycleOwner, Observer {
-            if (it == true) {
-                progress?.visibility = ProgressBar.VISIBLE
-            } else {
+            if (it != null) {
+                tvName?.text = it.name
+                tvCity?.text = "Город: " + it.city
+                tvPhone?.text = "Номер телефона: " + it.phone
+                tvEmail?.text = "E-mail: " + it.email
                 progress?.visibility = ProgressBar.INVISIBLE
             }
         })
-
-         */
         val sharedPrefs =
             activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         val token = sharedPrefs!!.getString("token", "")
@@ -70,6 +62,12 @@ class profileFragment : Fragment() {
             findNavController().navigate(R.id.loginFragment)
         } else {
             viewModel.getUserInfo("Bearer " + token)
+        }
+        linearMyFav.setOnClickListener {
+            findNavController().navigate(R.id.favoriteFragment)
+        }
+        linearMyAds.setOnClickListener {
+            findNavController().navigate(R.id.userAdsFragment)
         }
     }
 

@@ -57,4 +57,14 @@
             android:id="@+id/action_filterFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/userAdsFragment"
+        android:name="com.example.pethub.main.userAdsFragment"
+        android:label="fragment_user_ads"
+        tools:layout="@layout/fragment_user_ads" />
+    <fragment
+        android:id="@+id/editFragment"
+        android:name="com.example.pethub.main.editFragment"
+        android:label="fragment_edit"
+        tools:layout="@layout/fragment_edit" />
 </navigation>

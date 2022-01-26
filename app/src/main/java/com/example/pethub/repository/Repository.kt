@@ -16,4 +16,7 @@ class Repository {
     suspend fun fullFilter(type: Int, kind: Int) = api.fullFilter(type, kind)
     suspend fun filterWithType(type: Int) = api.filterWithType(type)
     suspend fun filterWithKind(kind: Int) = api.filterWithKind(kind)
+    suspend fun getUsersAds(auth: String) = api.getUsersAds(auth)
+    suspend fun deleteUsersAd(auth: String, id: Int) = api.deleteUsersAd(auth, id)
+    suspend fun updateUsersAd(auth: String, id: Int, adData: AdPost) = api.updateUsersAd(auth, id, adData)
 }

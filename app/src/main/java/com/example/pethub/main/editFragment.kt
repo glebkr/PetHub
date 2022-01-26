@@ -1,6 +1,5 @@
 package com.example.pethub.main
 
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -19,7 +18,7 @@ import com.example.pethub.R
 import com.example.pethub.retrofit.AdPost
 import com.example.pethub.retrofit.Kind
 import com.example.pethub.viewmodel.ViewModel
-import kotlinx.android.synthetic.main.fragment_add.*
+import kotlinx.android.synthetic.main.fragment_edit.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -28,16 +27,17 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [addFragment.newInstance] factory method to
+ * Use the [editFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class addFragment : Fragment() {
+class editFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     val viewModel by activityViewModels<ViewModel>()
     val kindList = mutableListOf<String>("Выберите вид")
     val fullKindList = mutableListOf<Kind>()
+    var id: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,16 +52,38 @@ class addFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add, container, false)
+        return inflater.inflate(R.layout.fragment_edit, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.ad.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                id = it.id
+                editTitleTv.setText(it.title)
+                editPriceTv.setText(it.price)
+                editTvLocation.setText(it.x_coord)
+            }
+        })
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        spinnerEditType.post {
+            run {
+                spinnerEditType.setSelection( sharedPrefs?.getString("edit_type", "")!!.toInt())
+            }
+        }
+        /*
+        spinnerEditKind.post {
+            run {
+                spinnerEditKind.setSelection( sharedPrefs?.getString("edit_kind", "")!!.toInt())
+            }
+        }
+
+         */
+
         val token = sharedPrefs?.getString("token", "")
         val items = arrayOf("Выберите тип","Продажа", "Покупка", "Утерян", "Найден")
-        val spinnerAddTypeAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, items) {
+        val spinnerEditTypeAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, items) {
             override fun isEnabled(position: Int): Boolean {
                 return position != 0
             }
@@ -80,10 +102,10 @@ class addFragment : Fragment() {
                 return view
             }
         }
-        spinnerAddTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerAddType.adapter = spinnerAddTypeAdapter
+        spinnerEditTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerEditType.adapter = spinnerEditTypeAdapter
         var type : Int? = null
-        spinnerAddType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        spinnerEditType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, v: View?, position: Int, id: Long) {
                 when (position) {
                     1 -> type = 1
@@ -105,7 +127,7 @@ class addFragment : Fragment() {
             }
             fullKindList.addAll(it)
         })
-        val spinnerAddKindAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, kindList) {
+        val spinnerEditKindAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, kindList) {
             override fun isEnabled(position: Int): Boolean {
                 return position != 0
             }
@@ -124,10 +146,10 @@ class addFragment : Fragment() {
                 return view
             }
         }
-        spinnerAddKindAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerAddKind.adapter = spinnerAddKindAdapter
+        spinnerEditKindAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerEditKind.adapter = spinnerEditKindAdapter
         var kind : Int? = null
-        spinnerAddKind.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        spinnerEditKind.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
                 for (item in fullKindList) {
                     if (item.title == kindList[position]) {
@@ -140,36 +162,15 @@ class addFragment : Fragment() {
             }
 
         }
+
         if (token!!.isNotEmpty()) {
-            bthAdd.setOnClickListener {
-                val title = titleTv.text.toString().trim()
-                val location = tvLocation.text.toString().trim()
-                val price = priceTv.text.toString().trim()
-                if (title.isNotEmpty() && location.isNotEmpty() && price.isNotEmpty() && type != null && kind != null) {
-                    val adData = AdPost(title, type, kind, price, location, "Пушкина 33")
-                    viewModel.postAd("Bearer " + token, adData)
-                    titleTv.text = null
-                    tvLocation.text = null
-                    priceTv.text = null
-                    spinnerAddType.post {
-                        run {
-                            spinnerAddType.setSelection(0)
-                        }
-                    }
-                    spinnerAddKind.post {
-                        run {
-                            spinnerAddKind.setSelection(0)
-                        }
-                    }
-                } else if (type == null && kind == null) {
-                    Toast.makeText(requireContext(), "Выберите тип объявления и вид питомца", Toast.LENGTH_SHORT).show()
-                } else  if (type == null && kind != null) {
-                    Toast.makeText(requireContext(), "Выберите тип объявлеия", Toast.LENGTH_SHORT).show()
-                } else if (type != null && kind == null) {
-                    Toast.makeText(requireContext(), "Выберите вид питомца", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(requireContext(), "Заполните остальные поля", Toast.LENGTH_SHORT).show()
-                }
+            bthEdit.setOnClickListener {
+                val title = editTitleTv.text.toString().trim()
+                val location = editTvLocation.text.toString().trim()
+                val price = editPriceTv.text.toString().trim()
+                val adData = AdPost(title, type, kind, price, location, "Пушкина 33")
+                id?.let { id -> viewModel.updateUsersAd("Bearer " + token, id, adData) }
+                findNavController().navigate(R.id.userAdsFragment)
             }
         } else {
             findNavController().navigate(R.id.loginFragment)
@@ -177,6 +178,7 @@ class addFragment : Fragment() {
         }
 
     }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -184,12 +186,12 @@ class addFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment addFragment.
+         * @return A new instance of fragment editFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            addFragment().apply {
+            editFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

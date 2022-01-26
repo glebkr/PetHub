@@ -40,5 +40,13 @@ interface ApiDataInterface {
     @GET("/ad")
     fun filterWithKind(@Query("kind") type: Int) : Call<MutableList<Ad>>
 
+    @GET("/ad/user")
+    fun getUsersAds(@Header("Authorization") auth: String) : Call<MutableList<Ad>>
+
+    @DELETE("/ad/{id}")
+    fun deleteUsersAd(@Header("Authorization") auth: String, @Path("id") id: Int) : Call<Void>
+
+    @PATCH("/ad/{id}")
+    fun updateUsersAd(@Header("Authorization") auth: String, @Path("id") id: Int, @Body adData: AdPost) : Call<Void>
 
  }

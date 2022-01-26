@@ -75,16 +75,22 @@ class homeFragment : Fragment() {
                 if (!it.isNullOrEmpty()) {
                     adapter.updateFavList(it)
                 }
+                viewModel._favAdList.postValue(null)
             })
         }
         if (viewModel._adList.value == null) {
             progress?.visibility = ProgressBar.VISIBLE
             viewModel.getAds()
+        }  else {
+            if (sharedPrefs.getString("query", "").isNullOrEmpty() && sharedPrefs.getString("type", "").isNullOrEmpty() &&
+                sharedPrefs.getString("kind", "").isNullOrEmpty())  {
+                progress?.visibility = ProgressBar.VISIBLE
+                viewModel.getAds()
+            }
         }
         viewModel.adList.observe(viewLifecycleOwner, Observer {
             if (!it.isNullOrEmpty()) {
                 adapter.updateList(it)
-                secondAdList.addAll(adapter.list)
                 progress?.visibility = ProgressBar.INVISIBLE
             }
         })
@@ -126,20 +132,20 @@ class homeFragment : Fragment() {
         adapter.setOnItemClickListener(object : FeedAdapter.OnClickListener {
             override fun onImageViewClick(position: Int) {
                     if (token.isNotEmpty()) {
-                        val adId = secondAdList[position].id
-                        viewModel.favAdList.observe(viewLifecycleOwner, Observer { favAdList ->
-                            val idList = mutableListOf<Int>()
-                            for (i in 0 until favAdList.size) {
-                                idList.add(favAdList[i].id!!)
+                        val adId = adapter.list[position].id
+                        val idList = mutableListOf<Int>()
+                        for (i in 0 until adapter.favList.size) {
+                            idList.add(adapter.favList[i].id!!)
+                        }
+                        if (adId != null) {
+                            if (idList.contains(adId)) {
+                                viewModel.delFavAd("Bearer " + token, adId)
+                                adapter.favList.remove(adapter.list[position])
+                            } else {
+                                viewModel.postFavAd("Bearer " + token, adId)
+                                adapter.favList.add(adapter.list[position])
                             }
-                            if (adId != null) {
-                                if (idList.contains(adId)) {
-                                    viewModel.delFavAd("Bearer " + token, adId)
-                                } else {
-                                    viewModel.postFavAd("Bearer " + token, adId)
-                                }
-                            }
-                        })
+                        }
                     } else {
                         findNavController().navigate(R.id.loginFragment)
                         Toast.makeText(requireContext(), "Пожалуйста, авторизуйтесь", Toast.LENGTH_SHORT).show()
@@ -147,10 +153,10 @@ class homeFragment : Fragment() {
             }
 
             override fun onItemClick(position: Int) {
-                sharedPrefs!!.edit().apply {
-                    putString("title", secondAdList[position].title)
-                    putString("price", secondAdList[position].price)
-                    putString("city", secondAdList[position].x_coord)
+                sharedPrefs.edit().apply {
+                    putString("title", adapter.list[position].title)
+                    putString("price", adapter.list[position].price)
+                    putString("city", adapter.list[position].x_coord)
                 }.apply()
                 // argument.newInstance(it[position].title, it[position].price, it[position].x_coord)
                findNavController().navigate(R.id.descriptionFragment)

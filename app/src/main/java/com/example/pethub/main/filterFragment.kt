@@ -77,7 +77,7 @@ class filterFragment : Fragment() {
             }
         }
 
-        val typeItems = arrayOf("Выберите тип","Продажа", "Покупка", "Утерян", "Найден")
+        val typeItems = mutableListOf("Выберите тип","Продажа", "Покупка", "Утерян", "Найден")
 
         val spinnerTypeAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, typeItems) {
             override fun isEnabled(position: Int): Boolean {
@@ -196,7 +196,7 @@ class filterFragment : Fragment() {
                     viewModel._adList.postValue(newList)
                     findNavController().navigate(R.id.homeFragment)
                 } else {
-                    Toast.makeText(requireContext(), "Ничего не найдено", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "Ничего не найдено", Toast.LENGTH_SHORT).show()
                 }
             }
             if (type != null && kind != null) {

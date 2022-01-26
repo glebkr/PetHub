@@ -12,17 +12,17 @@ class FeedAdapter(var list: MutableList<Ad>, val favList: MutableList<Ad>) : Rec
     lateinit var mListener : FeedAdapter.OnClickListener
     inner class Holder(itemView: View, listener : OnClickListener) : RecyclerView.ViewHolder(itemView) {
         init {
-            val idList = mutableListOf<Int?>()
-            for (item in favList) {
-                idList.add(item.id)
-            }
             itemView.IVfavorite.setOnClickListener {
-                listener.onImageViewClick(adapterPosition)
+                val idList = mutableListOf<Int?>()
+                for (item in favList) {
+                    idList.add(item.id)
+                }
                 if (!idList.contains(list[adapterPosition].id)) {
                     itemView.IVfavorite.setImageResource(R.drawable.ic_favorite_pressed)
                 } else {
                     itemView.IVfavorite.setImageResource(R.drawable.ic_favorite_border)
                 }
+                listener.onImageViewClick(adapterPosition)
             }
             itemView.setOnClickListener {
                 listener.onItemClick(adapterPosition)
@@ -59,13 +59,6 @@ class FeedAdapter(var list: MutableList<Ad>, val favList: MutableList<Ad>) : Rec
         } else {
             holder.itemView.IVfavorite.setImageResource(R.drawable.ic_favorite_pressed)
         }
-        /*
-        if (curItem.favorite == true) {
-            holder.itemView.IVfavorite.setImageResource(R.drawable.ic_favorite_pressed)
-        } else {
-            holder.itemView.IVfavorite.setImageResource(R.drawable.ic_favorite)
-        }
-         */
     }
 
     override fun getItemCount(): Int {
