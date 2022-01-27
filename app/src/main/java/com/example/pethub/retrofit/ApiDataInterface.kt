@@ -49,4 +49,6 @@ interface ApiDataInterface {
     @PATCH("/ad/{id}")
     fun updateUsersAd(@Header("Authorization") auth: String, @Path("id") id: Int, @Body adData: AdPost) : Call<Void>
 
+    @PATCH("/user")
+    fun updateUser(@Header("Authorization") auth: String, @Body userUpdateInfo: UserUpdateInfo) : Call<Void>
  }

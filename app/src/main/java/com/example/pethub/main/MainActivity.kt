@@ -42,8 +42,7 @@ class MainActivity : AppCompatActivity() {
         val sharedPrefs = this.getSharedPreferences("SharedPrefs", MODE_PRIVATE)
         when (item.itemId) {
             R.id.filter -> findNavController(R.id.fragment_container).navigate(R.id.filterFragment)
-
-            R.id.clear_filter -> {
+            R.id.clear_filter_home -> {
                 sharedPrefs.edit().apply {
                     putString("query", "")
                     putString("type", "")
@@ -51,7 +50,18 @@ class MainActivity : AppCompatActivity() {
                 }.apply()
                 viewModel._adList.postValue(null)
                 findNavController(R.id.fragment_container).navigate(R.id.homeFragment)
+
             }
+            R.id.filter_clear -> {
+                sharedPrefs.edit().apply {
+                    putString("query", "")
+                    putString("type", "")
+                    putString("kind", "")
+                }.apply()
+                viewModel._adList.postValue(null)
+                findNavController(R.id.fragment_container).navigate(R.id.filterFragment)
+            }
+            R.id.edit_profile -> findNavController(R.id.fragment_container).navigate(R.id.editProfileFragment)
             R.id.logOut -> {
                 sharedPrefs
                     .edit()

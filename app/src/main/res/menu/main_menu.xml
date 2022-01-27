@@ -3,7 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/clear_filter"
+        android:id="@+id/clear_filter_home"
+        android:title="Очистить фильтр"
+        app:showAsAction="always"
+        android:icon="@drawable/clear_filter"
+        android:visible="false" />
+    <item
+        android:id="@+id/filter_clear"
         android:title="Очистить фильтр"
         app:showAsAction="always"
         android:icon="@drawable/clear_filter"
@@ -15,10 +21,17 @@
         android:icon="@drawable/filter"
         android:visible="false" />
     <item
+        android:id="@+id/edit_profile"
+        android:title="Редактировать профиль"
+        android:icon="@drawable/ic_edit_profile"
+        app:showAsAction="always"
+        android:visible="false" />
+    <item
         android:id="@+id/logOut"
         android:title="Выйти"
         android:icon="@drawable/ic_logout"
         app:showAsAction="always"
         android:visible="false" />
+
 
 </menu>

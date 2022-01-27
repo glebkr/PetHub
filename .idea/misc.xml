@@ -10,6 +10,7 @@
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/drawable/ic_back.xml" value="0.153125" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/drawable/ic_delete.xml" value="0.15208333333333332" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/drawable/ic_drop.xml" value="0.153125" />
+        <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/drawable/ic_edit_profile.xml" value="0.2125" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/drawable/ic_favorite.xml" value="0.18802083333333333" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/drawable/ic_favorite_border.xml" value="0.2703125" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/drawable/ic_favorite_pressed.xml" value="0.2703125" />
@@ -27,6 +28,7 @@
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_add.xml" value="0.2" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_description.xml" value="0.264" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_edit.xml" value="0.4" />
+        <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_edit_profile.xml" value="0.144" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_favorite.xml" value="0.176" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_filter.xml" value="0.264" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_first.xml" value="0.17300724637681159" />
@@ -36,7 +38,7 @@
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_maps.xml" value="0.16" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_profile.xml" value="0.28804347826086957" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_second.xml" value="0.13020833333333334" />
-        <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_sign_up.xml" value="0.264" />
+        <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_sign_up.xml" value="0.2" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/fragment_user_ads.xml" value="0.152" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/toolbar.xml" value="0.13697916666666668" />
         <entry key="..\:/Users/gleb_k/Desktop/PetHub/app/src/main/res/layout/user_feed_item.xml" value="0.4" />

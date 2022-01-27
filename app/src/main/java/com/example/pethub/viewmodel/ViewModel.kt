@@ -34,6 +34,8 @@ class ViewModel(application: Application): AndroidViewModel(application) {
     val userAdsList : LiveData<MutableList<Ad>> = _userAdsList
     val _ad = MutableLiveData<AdEdit>()
     val ad : LiveData<AdEdit> = _ad
+    val _secondAdList = MutableLiveData<MutableList<Ad>>()
+    val secondAdList : LiveData<MutableList<Ad>> = _secondAdList
     val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading : LiveData<Boolean> = _isLoading
 
@@ -421,6 +423,65 @@ class ViewModel(application: Application): AndroidViewModel(application) {
 
             } catch (ex: Exception) {
                 Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    fun getSecondAds() {
+        viewModelScope.launch {
+            try {
+                rep.getAds().enqueue(object : retrofit2.Callback<MutableList<Ad>> {
+                    override fun onResponse(
+                        call: Call<MutableList<Ad>>,
+                        response: Response<MutableList<Ad>>
+                    ) {
+                        val resp = response.body()
+                        _secondAdList.postValue(resp)
+                    }
+
+                    override fun onFailure(call: Call<MutableList<Ad>>, t: Throwable) {
+                        Toast.makeText(context, "Неудача, попробуйте еще раз", Toast.LENGTH_SHORT).show()
+                    }
+
+                })
+            } catch(ex: Exception) {
+                Toast.makeText(context, "Ошибка", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun updateUser(auth: String, userUpdateInfo: UserUpdateInfo) {
+        viewModelScope.launch {
+            try {
+                rep.updateUser(auth, userUpdateInfo).enqueue(object : retrofit2.Callback<Void> {
+                    override fun onResponse(
+                        call: Call<Void>,
+                        response: Response<Void>
+                    ) {
+                        if (response.code() != 500) {
+                            Toast.makeText(
+                                context,
+                                "Информация о пользователе успешно изменена!",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Неизвестная ошибка",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                        Toast.makeText(context, "Неудача, попробуйте еще раз", Toast.LENGTH_SHORT).show()
+                    }
+
+                })
+            } catch(ex: Exception) {
+                Toast.makeText(context, "Ошибка", Toast.LENGTH_SHORT).show()
             }
         }
     }

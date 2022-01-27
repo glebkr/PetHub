@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -38,15 +39,24 @@ class filterFragment : Fragment() {
     var kindList = mutableListOf<String>("Выберите вид")
     val fullKindList = mutableListOf<Kind>()
     val newList = mutableListOf<Ad>()
+    var typePrefs : Int? = null
+    var kindPrefs : Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        menu.findItem(R.id.filter_clear).isVisible = !sharedPrefs?.getString("query", "").isNullOrEmpty() || !sharedPrefs?.getString("type", "").isNullOrEmpty() ||
+                !sharedPrefs?.getString("kind", "").isNullOrEmpty()
+        super.onPrepareOptionsMenu(menu)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -109,6 +119,8 @@ class filterFragment : Fragment() {
                     3 -> type = 3
                     4 -> type = 4
                 }
+                typePrefs = spinnerType.selectedItemPosition
+
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -154,6 +166,7 @@ class filterFragment : Fragment() {
                         kind = item.id
                     }
                 }
+                kindPrefs = spinnerKind.selectedItemPosition
 
             }
 
@@ -181,7 +194,7 @@ class filterFragment : Fragment() {
                 }
                 if (spinnerKind.selectedItemId.toInt() != 0) {
                     sharedPrefs.edit().apply {
-                        putString("kind", "$kind")
+                        putString("kind", "$kindPrefs")
                     }.apply()
                 }
             }
@@ -206,8 +219,8 @@ class filterFragment : Fragment() {
             } else if (type == null && kind != null) {
                 viewModel.filterWithKind(kind!!)
             } else if (type == null && kind == null) {
-                viewModel.getAds()
-                viewModel.adList.observe(viewLifecycleOwner, Observer {
+                viewModel.getSecondAds()
+                viewModel.secondAdList.observe(viewLifecycleOwner, Observer {
                     if (!it.isNullOrEmpty()) {
                         if (searchView.query.isNotEmpty()) {
                             filter(searchView.query.toString(), it)
@@ -216,9 +229,10 @@ class filterFragment : Fragment() {
                             viewModel._adList.postValue(it)
                             findNavController().navigate(R.id.homeFragment)
                         }
-                        //viewModel._adList.postValue(null)
+                        viewModel._secondAdList.postValue(null)
                     }
-                } )
+                })
+
             }
 
             viewModel.filteredList.observe(viewLifecycleOwner, Observer {

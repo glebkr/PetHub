@@ -65,6 +65,7 @@ class editFragment : Fragment() {
                 editPriceTv.setText(it.price)
                 editTvLocation.setText(it.x_coord)
             }
+            viewModel._ad.postValue(null)
         })
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         spinnerEditType.post {
@@ -72,14 +73,6 @@ class editFragment : Fragment() {
                 spinnerEditType.setSelection( sharedPrefs?.getString("edit_type", "")!!.toInt())
             }
         }
-        /*
-        spinnerEditKind.post {
-            run {
-                spinnerEditKind.setSelection( sharedPrefs?.getString("edit_kind", "")!!.toInt())
-            }
-        }
-
-         */
 
         val token = sharedPrefs?.getString("token", "")
         val items = arrayOf("Выберите тип","Продажа", "Покупка", "Утерян", "Найден")
@@ -120,12 +113,13 @@ class editFragment : Fragment() {
 
         viewModel.getKinds()
         viewModel.kindList.observe(viewLifecycleOwner, Observer {
-            for (item in it) {
-                if (!kindList.contains(item.title)) {
-                    item.title?.let { title -> kindList.add(title) }
+            if (!it.isNullOrEmpty()) {
+                for (item in it) {
+                    if (!kindList.contains(item.title)) {
+                        item.title?.let { title -> kindList.add(title) }
+                    }
                 }
             }
-            fullKindList.addAll(it)
         })
         val spinnerEditKindAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, kindList) {
             override fun isEnabled(position: Int): Boolean {
@@ -146,6 +140,18 @@ class editFragment : Fragment() {
                 return view
             }
         }
+        viewModel.kindList.observe(viewLifecycleOwner, Observer {
+            if (!it.isNullOrEmpty()) {
+                fullKindList.addAll(it)
+                for (item in fullKindList) {
+                    if (item.id == sharedPrefs?.getString("edit_kind", "")!!.toInt()) {
+                        spinnerEditKind.post {
+                            spinnerEditKind.setSelection(spinnerEditKindAdapter.getPosition(item.title))
+                        }
+                    }
+                }
+            }
+        })
         spinnerEditKindAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerEditKind.adapter = spinnerEditKindAdapter
         var kind : Int? = null
@@ -163,14 +169,18 @@ class editFragment : Fragment() {
 
         }
 
+
         if (token!!.isNotEmpty()) {
+            viewModel._userAdsList.postValue(null)
             bthEdit.setOnClickListener {
                 val title = editTitleTv.text.toString().trim()
                 val location = editTvLocation.text.toString().trim()
                 val price = editPriceTv.text.toString().trim()
                 val adData = AdPost(title, type, kind, price, location, "Пушкина 33")
                 id?.let { id -> viewModel.updateUsersAd("Bearer " + token, id, adData) }
+                viewModel._userAdsList.postValue(null)
                 findNavController().navigate(R.id.userAdsFragment)
+                viewModel._userAdsList.postValue(null)
             }
         } else {
             findNavController().navigate(R.id.loginFragment)

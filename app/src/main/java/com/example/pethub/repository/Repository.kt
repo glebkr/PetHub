@@ -19,4 +19,5 @@ class Repository {
     suspend fun getUsersAds(auth: String) = api.getUsersAds(auth)
     suspend fun deleteUsersAd(auth: String, id: Int) = api.deleteUsersAd(auth, id)
     suspend fun updateUsersAd(auth: String, id: Int, adData: AdPost) = api.updateUsersAd(auth, id, adData)
+    suspend fun updateUser(auth: String, userUpdateInfo: UserUpdateInfo) = api.updateUser(auth, userUpdateInfo)
 }

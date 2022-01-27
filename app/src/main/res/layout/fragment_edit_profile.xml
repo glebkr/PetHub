@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical|center_horizontal"
-    tools:context=".main.signUpFragment">
+    tools:context=".main.editProfileFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -19,10 +19,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.335">
+        app:layout_constraintVertical_bias="0.365">
 
         <EditText
-            android:id="@+id/etName"
+            android:id="@+id/etUpdateName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autofillHints="name"
@@ -36,22 +36,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:autofillHints="password"
-            android:ems="12"
-            android:hint="Пароль"
-            android:inputType="textPassword"
-            android:minHeight="48dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.481"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etPhone" />
-
-        <EditText
-            android:id="@+id/etPhone"
+            android:id="@+id/etUpdatePhone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -66,7 +51,7 @@
             app:layout_constraintTop_toBottomOf="@+id/etCity" />
 
         <EditText
-            android:id="@+id/etLogin"
+            android:id="@+id/etUpdateLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -81,22 +66,7 @@
             app:layout_constraintTop_toBottomOf="@+id/etName" />
 
         <EditText
-            android:id="@+id/etConfirmPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:autofillHints="password"
-            android:ems="12"
-            android:hint="Подтвердите пароль"
-            android:inputType="textPassword"
-            android:minHeight="48dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.481"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etPassword" />
-
-        <EditText
-            android:id="@+id/etCity"
+            android:id="@+id/etUpdateCity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -111,11 +81,11 @@
             app:layout_constraintTop_toBottomOf="@+id/etLogin" />
 
         <Button
-            android:id="@+id/signUpBtn"
+            android:id="@+id/editProfileBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:text="Зарегистрироваться"
+            android:text="Изменить профиль"
             android:textColor="#FFFFFF"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

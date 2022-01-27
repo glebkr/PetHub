@@ -57,7 +57,7 @@ class homeFragment : Fragment() {
 
     override fun onPrepareOptionsMenu(menu: Menu) {
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
-        menu.findItem(R.id.clear_filter).isVisible = !sharedPrefs?.getString("query", "").isNullOrEmpty() || !sharedPrefs?.getString("type", "").isNullOrEmpty() ||
+        menu.findItem(R.id.clear_filter_home).isVisible = !sharedPrefs?.getString("query", "").isNullOrEmpty() || !sharedPrefs?.getString("type", "").isNullOrEmpty() ||
                 !sharedPrefs?.getString("kind", "").isNullOrEmpty()
         menu.findItem(R.id.filter).isVisible = true
         super.onPrepareOptionsMenu(menu)
@@ -79,11 +79,8 @@ class homeFragment : Fragment() {
             })
         }
         if (viewModel._adList.value == null) {
-            progress?.visibility = ProgressBar.VISIBLE
-            viewModel.getAds()
-        }  else {
             if (sharedPrefs.getString("query", "").isNullOrEmpty() && sharedPrefs.getString("type", "").isNullOrEmpty() &&
-                sharedPrefs.getString("kind", "").isNullOrEmpty())  {
+                sharedPrefs.getString("kind", "").isNullOrEmpty()) {
                 progress?.visibility = ProgressBar.VISIBLE
                 viewModel.getAds()
             }
