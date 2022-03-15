@@ -8,16 +8,28 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="336dp"
-        android:layout_height="352dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:gravity="center_horizontal|center_vertical"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.471">
+        app:layout_constraintVertical_bias="0.322">
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivAdPhoto"
+            android:layout_width="115dp"
+            android:layout_height="115dp"
+            android:layout_marginTop="25dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:src="@color/lightGrey"
+            app:civ_border_width="1dp"
+            app:civ_border_color="@color/grey"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/titleTv"
@@ -100,7 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="15dp"
             android:text="Создать объявление"
             android:textColor="@color/white"
             android:textSize="16dp" />

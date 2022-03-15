@@ -49,7 +49,7 @@ class loginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.token.observe(viewLifecycleOwner, Observer {
-            if (it.isNotEmpty()) {
+            if (!it.isNullOrEmpty()) {
                 findNavController().navigate(R.id.profileFragment)
                 viewModel._token.postValue("")
                 progress?.visibility = ProgressBar.INVISIBLE

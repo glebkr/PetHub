@@ -10,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.pethub.repository.Repository
 import com.example.pethub.retrofit.*
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
 import java.lang.Exception
@@ -177,10 +179,12 @@ class ViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    fun postAd(auth: String, adData: AdPost) {
+    fun postAd(
+        auth: String, title: RequestBody, typeId: RequestBody, animalId: RequestBody, city: RequestBody,
+        image: MultipartBody.Part, x_coord: RequestBody, y_coord: RequestBody, price: RequestBody, description: RequestBody) {
         viewModelScope.launch {
             try {
-                rep.postAd(auth, adData).enqueue(object : retrofit2.Callback<Void> {
+                rep.postAd(auth, title, typeId, animalId, city, image, x_coord, y_coord, price, description).enqueue(object : retrofit2.Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         Toast.makeText(context, "Объявление создано!", Toast.LENGTH_SHORT).show()
                     }
@@ -240,10 +244,10 @@ class ViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    fun fullFilter(type: Int, kind: Int) {
+    fun fullFilter(type: Int? = null, kind: Int? = null, city: String? = null) {
         viewModelScope.launch {
             try {
-                rep.fullFilter(type, kind).enqueue(object : retrofit2.Callback<MutableList<Ad>> {
+                rep.fullFilter(type, kind, city).enqueue(object : retrofit2.Callback<MutableList<Ad>> {
                     override fun onResponse(
                         Call: Call<MutableList<Ad>>,
                         response: Response<MutableList<Ad>>
@@ -264,63 +268,6 @@ class ViewModel(application: Application): AndroidViewModel(application) {
                 })
             } catch (ex: Exception) {
 
-                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    fun filterWithType(type: Int) {
-        viewModelScope.launch {
-            try {
-                rep.filterWithType(type).enqueue(object : retrofit2.Callback<MutableList<Ad>> {
-                    override fun onResponse(
-                        Call: Call<MutableList<Ad>>,
-                        response: Response<MutableList<Ad>>
-                    ) {
-                        val resp = response.body()
-                        if (resp!!.size != 0) {
-                            _filteredList.postValue(resp)
-                        } else {
-                            Toast.makeText(context, "Ничего не найдено", Toast.LENGTH_LONG).show()
-                        }
-                    }
-
-                    override fun onFailure(Call: Call<MutableList<Ad>>, response: Throwable) {
-                        Toast.makeText(context, "Неудача, попробуйте еще раз", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-
-                })
-            } catch (ex: Exception) {
-
-                Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    fun filterWithKind(kind: Int) {
-        viewModelScope.launch {
-            try {
-                rep.filterWithKind(kind).enqueue(object : retrofit2.Callback<MutableList<Ad>> {
-                    override fun onResponse(
-                        Call: Call<MutableList<Ad>>,
-                        response: Response<MutableList<Ad>>
-                    ) {
-                        val resp = response.body()
-                        if (resp!!.size != 0) {
-                            _filteredList.postValue(resp)
-                        } else {
-                            Toast.makeText(context, "Ничего не найдено", Toast.LENGTH_LONG).show()
-                        }
-                    }
-
-                    override fun onFailure(Call: Call<MutableList<Ad>>, response: Throwable) {
-                        Toast.makeText(context, "Неудача, попробуйте еще раз", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-
-                })
-            } catch (ex: Exception) {
                 Toast.makeText(context, "Ошибка", Toast.LENGTH_LONG).show()
             }
         }

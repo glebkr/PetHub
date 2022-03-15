@@ -15,7 +15,9 @@ import com.example.pethub.feedAdapter.FeedAdapter
 import com.example.pethub.retrofit.SignUpInfo
 import com.example.pethub.retrofit.UserUpdateInfo
 import com.example.pethub.viewmodel.ViewModel
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_edit_profile.*
+import kotlinx.android.synthetic.main.fragment_profile.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,6 +62,9 @@ class editProfileFragment : Fragment() {
                 etUpdateLogin.setText(it.login)
                 etUpdateCity.setText(it.city)
                 etUpdatePhone.setText(it.phone)
+                if (!it.url.isNullOrEmpty()) {
+                    Picasso.get().load(it.url).into(ivUserEdit)
+                }
             }
             viewModel._userInfo.postValue(null)
         })

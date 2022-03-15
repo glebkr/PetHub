@@ -11,8 +11,10 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.pethub.R
 import com.example.pethub.viewmodel.ViewModel
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.progress
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -52,6 +54,9 @@ class profileFragment : Fragment() {
                 tvPhone?.text = "Номер телефона: " + it.phone
                 tvEmail?.text = "E-mail: " + it.email
                 progress?.visibility = ProgressBar.INVISIBLE
+                if (!it.url.isNullOrEmpty()) {
+                    Picasso.get().load(it.url).into(ivUser)
+                }
             }
     })
         val sharedPrefs =

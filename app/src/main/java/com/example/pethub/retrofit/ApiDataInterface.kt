@@ -1,5 +1,7 @@
 package com.example.pethub.retrofit
 
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -19,8 +21,10 @@ interface ApiDataInterface {
     @GET("/ad/favorite")
     fun getFavAds(@Header("Authorization") auth: String) : Call<MutableList<Ad>>
 
+    @Multipart
     @POST("/ad")
-    fun postAd(@Header("Authorization") auth: String, @Body adData : AdPost) : Call<Void>
+    fun postAd(@Header("Authorization") auth: String, @Part("title") title: RequestBody, @Part("type_id") typeId: RequestBody, @Part("animal_kind") animalId: RequestBody, @Part("city") city: RequestBody,
+               @Part image: MultipartBody.Part, @Part("x_coord") x_coord: RequestBody, @Part("y_coord") y_coord: RequestBody, @Part("price") price: RequestBody, @Part("description") description: RequestBody) : Call<Void>
 
     @DELETE("/ad/favorite/{id}")
     fun delFavAd(@Header("Authorization") auth: String, @Path("id") id: Int) : Call<Void>
@@ -32,13 +36,7 @@ interface ApiDataInterface {
     fun getKinds() : Call<MutableList<Kind>>
 
     @GET("/ad")
-    fun fullFilter(@Query("type") type: Int, @Query("kind") kind: Int) : Call<MutableList<Ad>>
-
-    @GET("/ad")
-    fun filterWithType(@Query("type") type: Int) : Call<MutableList<Ad>>
-
-    @GET("/ad")
-    fun filterWithKind(@Query("kind") type: Int) : Call<MutableList<Ad>>
+    fun fullFilter(@Query("type") type: Int? = null, @Query("kind") kind: Int? = null, @Query("city") city: String? = null) : Call<MutableList<Ad>>
 
     @GET("/ad/user")
     fun getUsersAds(@Header("Authorization") auth: String) : Call<MutableList<Ad>>

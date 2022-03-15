@@ -8,6 +8,8 @@ class Ad {
     var animal_kind: Int? = null
     var price: String? = null
     var desription: String? = null
+    var url: String? = null
+    var city: String? = null
     var x_coord: String? = null
     var y_coord: String? = null
 }

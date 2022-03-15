@@ -8,22 +8,23 @@ import android.view.MenuItem
 import android.widget.Toolbar
 import androidx.activity.viewModels
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.ui.*
 import com.example.pethub.R
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     val viewModel by viewModels<com.example.pethub.viewmodel.ViewModel>()
+    lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val navController = findNavController(R.id.fragment_container)
+        navController = findNavController(R.id.fragment_container)
         bottomNavigationView.setupWithNavController(navController)
-
+        val appBarConfiguration = AppBarConfiguration(setOf(R.id.homeFragment, R.id.favoriteFragment, R.id.addFragment, R.id.mapsFragment, R.id.profileFragment,R.id.loginFragment))
+        setupActionBarWithNavController(navController, appBarConfiguration)
         val sharedPrefs = this.getSharedPreferences("SharedPrefs", MODE_PRIVATE)
         sharedPrefs.edit().apply {
             putString("query", "")
@@ -31,6 +32,11 @@ class MainActivity : AppCompatActivity() {
             putString("kind", "")
         }.apply()
 
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        navController.navigateUp()
+        return super.onSupportNavigateUp()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -47,6 +53,7 @@ class MainActivity : AppCompatActivity() {
                     putString("query", "")
                     putString("type", "")
                     putString("kind", "")
+                    putString("cityFilter", "")
                 }.apply()
                 viewModel._adList.postValue(null)
                 findNavController(R.id.fragment_container).navigate(R.id.homeFragment)
@@ -57,6 +64,7 @@ class MainActivity : AppCompatActivity() {
                     putString("query", "")
                     putString("type", "")
                     putString("kind", "")
+                    putString("cityFilter", "")
                 }.apply()
                 viewModel._adList.postValue(null)
                 findNavController(R.id.fragment_container).navigate(R.id.filterFragment)

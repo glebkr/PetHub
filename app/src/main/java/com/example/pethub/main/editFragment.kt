@@ -18,7 +18,11 @@ import com.example.pethub.R
 import com.example.pethub.retrofit.AdPost
 import com.example.pethub.retrofit.Kind
 import com.example.pethub.viewmodel.ViewModel
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.feed_item.*
 import kotlinx.android.synthetic.main.fragment_edit.*
+import kotlinx.android.synthetic.main.fragment_profile.*
+import java.io.ByteArrayOutputStream
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -63,7 +67,10 @@ class editFragment : Fragment() {
                 id = it.id
                 editTitleTv.setText(it.title)
                 editPriceTv.setText(it.price)
-                editTvLocation.setText(it.x_coord)
+                editTvLocation.setText(it.city)
+                if (!it.url.isNullOrEmpty()) {
+                    Picasso.get().load(it.url).into(imageViewEditAd)
+                }
             }
             viewModel._ad.postValue(null)
         })
@@ -169,18 +176,17 @@ class editFragment : Fragment() {
 
         }
 
-
         if (token!!.isNotEmpty()) {
             viewModel._userAdsList.postValue(null)
             bthEdit.setOnClickListener {
                 val title = editTitleTv.text.toString().trim()
                 val location = editTvLocation.text.toString().trim()
                 val price = editPriceTv.text.toString().trim()
-                val adData = AdPost(title, type, kind, price, location, "Пушкина 33")
+                val adData = AdPost(title, type, kind, price, "Пушкина 33", "Пушкина 33", location, ByteArrayOutputStream())
+                viewModel._userAdsList.postValue(null)
                 id?.let { id -> viewModel.updateUsersAd("Bearer " + token, id, adData) }
                 viewModel._userAdsList.postValue(null)
                 findNavController().navigate(R.id.userAdsFragment)
-                viewModel._userAdsList.postValue(null)
             }
         } else {
             findNavController().navigate(R.id.loginFragment)
@@ -189,6 +195,11 @@ class editFragment : Fragment() {
 
     }
 
+    override fun onStop() {
+        super.onStop()
+        val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        sharedPrefs?.edit()?.putString("url","")?.apply()
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of

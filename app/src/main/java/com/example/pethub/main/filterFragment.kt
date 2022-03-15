@@ -39,8 +39,6 @@ class filterFragment : Fragment() {
     var kindList = mutableListOf<String>("Выберите вид")
     val fullKindList = mutableListOf<Kind>()
     val newList = mutableListOf<Ad>()
-    var typePrefs : Int? = null
-    var kindPrefs : Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,6 +84,9 @@ class filterFragment : Fragment() {
                 }
             }
         }
+        if (!sharedPrefs?.getString("cityFilter", "").toString().isNullOrEmpty()) {
+            etCity.setText(sharedPrefs?.getString("cityFilter", "").toString())
+        }
 
         val typeItems = mutableListOf("Выберите тип","Продажа", "Покупка", "Утерян", "Найден")
 
@@ -119,8 +120,6 @@ class filterFragment : Fragment() {
                     3 -> type = 3
                     4 -> type = 4
                 }
-                typePrefs = spinnerType.selectedItemPosition
-
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -130,12 +129,14 @@ class filterFragment : Fragment() {
 
         viewModel.getKinds()
         viewModel.kindList.observe(viewLifecycleOwner, Observer {
-            for (item in it) {
-                if (!kindList.contains(item.title)) {
-                    item.title?.let { title -> kindList.add(title)}
+            if (!it.isNullOrEmpty()) {
+                for (item in it) {
+                    if (!kindList.contains(item.title)) {
+                        item.title?.let { title -> kindList.add(title) }
+                    }
                 }
+                fullKindList.addAll(it)
             }
-            fullKindList.addAll(it)
         })
         val spinnerKindAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, kindList) {
             override fun isEnabled(position: Int): Boolean {
@@ -166,8 +167,6 @@ class filterFragment : Fragment() {
                         kind = item.id
                     }
                 }
-                kindPrefs = spinnerKind.selectedItemPosition
-
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -180,7 +179,9 @@ class filterFragment : Fragment() {
                 putString("query", "")
                 putString("type", "")
                 putString("kind", "")
+                putString("cityFilter", "")
             }.apply()
+
             fun addToSharedPrefs() {
                 if (!searchView.query.toString().isNullOrEmpty()) {
                     sharedPrefs.edit().apply {
@@ -189,15 +190,21 @@ class filterFragment : Fragment() {
                 }
                 if (spinnerType.selectedItemId.toInt() != 0) {
                     sharedPrefs.edit().apply {
-                        putString("type", "$type")
+                        putString("type", "${spinnerType.selectedItemPosition}")
                     }.apply()
                 }
                 if (spinnerKind.selectedItemId.toInt() != 0) {
                     sharedPrefs.edit().apply {
-                        putString("kind", "$kindPrefs")
+                        putString("kind", "${spinnerKind.selectedItemPosition}")
+                    }.apply()
+                }
+                if (!etCity.text.toString().isNullOrEmpty()) {
+                    sharedPrefs.edit().apply {
+                        putString("cityFilter", etCity.text.toString())
                     }.apply()
                 }
             }
+
             fun filter (text: String?, list: MutableList<Ad>) {
                 for (item in list) {
                     if (item.title!!.lowercase().contains(text!!.lowercase()) && (!newList.contains(item))) {
@@ -212,13 +219,11 @@ class filterFragment : Fragment() {
                     Toast.makeText(requireContext(), "Ничего не найдено", Toast.LENGTH_SHORT).show()
                 }
             }
-            if (type != null && kind != null) {
-                viewModel.fullFilter(type!!, kind!!)
-            } else if (type != null && kind == null) {
-                viewModel.filterWithType(type!!)
-            } else if (type == null && kind != null) {
-                viewModel.filterWithKind(kind!!)
-            } else if (type == null && kind == null) {
+
+            if (type != null || kind != null || !etCity.text.isNullOrEmpty()) {
+                viewModel.fullFilter(type, kind, etCity.text.toString().trim())
+            }
+                else {
                 viewModel.getSecondAds()
                 viewModel.secondAdList.observe(viewLifecycleOwner, Observer {
                     if (!it.isNullOrEmpty()) {

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pethub.R
 import com.example.pethub.retrofit.Ad
 import com.example.pethub.retrofit.AdPost
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.feed_item.view.*
 
 class FavoriteAdapter(var list: MutableList<Ad>) : RecyclerView.Adapter<FavoriteAdapter.Holder>() {
@@ -40,8 +41,11 @@ class FavoriteAdapter(var list: MutableList<Ad>) : RecyclerView.Adapter<Favorite
         val curItem = list[position]
         holder.itemView.tvTitle.text = curItem.title
         holder.itemView.tvPrice.text = "Цена: " + curItem.price
-        holder.itemView.tvAddress.text = "Адрес: " + curItem.x_coord
+        holder.itemView.tvAddress.text = "Город: " + curItem.city
         holder.itemView.IVfavorite.setImageResource(R.drawable.ic_favorite_pressed)
+        if (!curItem.url.isNullOrEmpty()) {
+            Picasso.get().load(curItem.url).into(holder.itemView.imageView)
+        }
     }
 
     override fun getItemCount(): Int {

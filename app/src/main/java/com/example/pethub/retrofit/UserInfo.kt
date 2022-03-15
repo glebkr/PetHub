@@ -7,4 +7,5 @@ class UserInfo () {
     val phone: String? = null
     val email: String? = null
     val city: String? = null
+    val url: String? = null
 }

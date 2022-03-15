@@ -1,5 +1,7 @@
 package com.example.pethub.main
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -58,14 +61,23 @@ class homeFragment : Fragment() {
     override fun onPrepareOptionsMenu(menu: Menu) {
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         menu.findItem(R.id.clear_filter_home).isVisible = !sharedPrefs?.getString("query", "").isNullOrEmpty() || !sharedPrefs?.getString("type", "").isNullOrEmpty() ||
-                !sharedPrefs?.getString("kind", "").isNullOrEmpty()
+                !sharedPrefs?.getString("kind", "").isNullOrEmpty() || !sharedPrefs?.getString("cityFilter", "").isNullOrEmpty()
         menu.findItem(R.id.filter).isVisible = true
         super.onPrepareOptionsMenu(menu)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val permissionWrite = ActivityCompat.checkSelfPermission(requireContext(),  Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionWrite != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                10);
+        }
+        val permissionRead = ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (permissionRead != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                10);
+        }
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         val adapter = FeedAdapter(mutableListOf(), mutableListOf())
         val token = sharedPrefs?.getString("token", "")
@@ -80,7 +92,7 @@ class homeFragment : Fragment() {
         }
         if (viewModel._adList.value == null) {
             if (sharedPrefs.getString("query", "").isNullOrEmpty() && sharedPrefs.getString("type", "").isNullOrEmpty() &&
-                sharedPrefs.getString("kind", "").isNullOrEmpty()) {
+                sharedPrefs.getString("kind", "").isNullOrEmpty() && sharedPrefs.getString("cityFilter", "").isNullOrEmpty()) {
                 progress?.visibility = ProgressBar.VISIBLE
                 viewModel.getAds()
             }
@@ -153,7 +165,11 @@ class homeFragment : Fragment() {
                 sharedPrefs.edit().apply {
                     putString("title", adapter.list[position].title)
                     putString("price", adapter.list[position].price)
-                    putString("city", adapter.list[position].x_coord)
+                    putString("city", adapter.list[position].city)
+                    if (!adapter.list[position].url.isNullOrEmpty()) {
+                        putString("url", adapter.list[position].url)
+                    }
+
                 }.apply()
                 // argument.newInstance(it[position].title, it[position].price, it[position].x_coord)
                findNavController().navigate(R.id.descriptionFragment)

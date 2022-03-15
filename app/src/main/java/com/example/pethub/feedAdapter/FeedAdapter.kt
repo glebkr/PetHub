@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pethub.R
 import com.example.pethub.retrofit.Ad
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.feed_item.view.*
 
 class FeedAdapter(var list: MutableList<Ad>, val favList: MutableList<Ad>) : RecyclerView.Adapter<FeedAdapter.Holder>() {
@@ -48,8 +49,10 @@ class FeedAdapter(var list: MutableList<Ad>, val favList: MutableList<Ad>) : Rec
         val curItem = list[position]
         holder.itemView.tvTitle.text = curItem.title
         holder.itemView.tvPrice.text = "Цена: " + curItem.price
-        holder.itemView.tvAddress.text = "Город: " + curItem.x_coord
-
+        holder.itemView.tvAddress.text = "Город: " + curItem.city
+        if (!curItem.url.isNullOrEmpty()) {
+            Picasso.get().load(curItem.url).into(holder.itemView.imageView)
+        }
         val idList = mutableListOf<Int?>()
         for (item in favList) {
             idList.add(item.id)

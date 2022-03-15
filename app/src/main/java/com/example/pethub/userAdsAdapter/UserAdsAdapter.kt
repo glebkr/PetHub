@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pethub.R
 import com.example.pethub.retrofit.Ad
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.feed_item.view.*
 import kotlinx.android.synthetic.main.feed_item.view.tvAddress
 import kotlinx.android.synthetic.main.feed_item.view.tvPrice
@@ -48,8 +49,10 @@ class UserAdsAdapter(var list: MutableList<Ad>) : RecyclerView.Adapter<UserAdsAd
         val curItem = list[position]
         holder.itemView.tvTitle.text = curItem.title
         holder.itemView.tvPrice.text = "Цена: " + curItem.price
-        holder.itemView.tvAddress.text = "Город: " + curItem.x_coord
-
+        holder.itemView.tvAddress.text = "Город: " + curItem.city
+        if (!curItem.url.isNullOrEmpty()) {
+            Picasso.get().load(curItem.url).into(holder.itemView.userImageView)
+        }
     }
 
     override fun getItemCount(): Int {

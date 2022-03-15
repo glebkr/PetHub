@@ -101,7 +101,10 @@ class favoriteFragment : Fragment() {
                 sharedPrefs.edit().apply {
                     putString("title", adapter.list[position].title)
                     putString("price", adapter.list[position].price)
-                    putString("city", adapter.list[position].x_coord)
+                    putString("city", adapter.list[position].city)
+                    if (!adapter.list[position].url.isNullOrEmpty()) {
+                        putString("url", adapter.list[position].url)
+                    }
                 }.apply()
                     //descriptionFragment.newInstance(it[position].title, it[position].price, it[position].x_coord)
                 findNavController().navigate(R.id.descriptionFragment)

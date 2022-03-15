@@ -53,9 +53,14 @@ class userAdsFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_user_ads, container, false)
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel._userAdsList.postValue(null)
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel._userAdsList.postValue(null)
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         val token = sharedPrefs?.getString("token", "")
         val adapter = UserAdsAdapter(mutableListOf())
@@ -65,8 +70,10 @@ class userAdsFragment : Fragment() {
         viewModel.userAdsList.observe(viewLifecycleOwner, Observer {
             if (!it.isNullOrEmpty()) {
                 adapter.updateList(it)
+                viewModel._userAdsList.postValue(null)
+            } else {
+                //viewModel.getUsersAds("Bearer " + token)
             }
-            viewModel._userAdsList.postValue(null)
         })
         adapter.setOnItemClickListener(object : UserAdsAdapter.OnClickListener {
             override fun onEditImageViewClick(position: Int) {
@@ -79,7 +86,9 @@ class userAdsFragment : Fragment() {
                         item.animal_kind,
                         item.price,
                         item.x_coord,
-                        item.y_coord
+                        item.y_coord,
+                        item.city,
+                        if (!item.url.isNullOrEmpty()) item.url else ""
                     )
                     viewModel._ad.postValue(ad)
                     sharedPrefs?.edit()?.apply {
@@ -98,6 +107,7 @@ class userAdsFragment : Fragment() {
                     viewModel.deleteUsersAd("Bearer " + token, adapter.list[position].id!!)
                     adapter.list.removeAt(position)
                     adapter.notifyItemRemoved(position)
+                    viewModel._adList.postValue(null)
                 }
                 builder.setNegativeButton("Нет") { dialog, which ->
                     dialog.cancel()
@@ -112,7 +122,10 @@ class userAdsFragment : Fragment() {
                 sharedPrefs!!.edit().apply {
                     putString("title", adapter.list[position].title)
                     putString("price", adapter.list[position].price)
-                    putString("city", adapter.list[position].x_coord)
+                    putString("city", adapter.list[position].city)
+                    if (!adapter.list[position].url.isNullOrEmpty()) {
+                        putString("url", adapter.list[position].url)
+                    }
                 }.apply()
                 findNavController().navigate(R.id.descriptionFragment)
             }

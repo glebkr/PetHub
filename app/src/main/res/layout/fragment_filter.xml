@@ -157,6 +157,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearKind" />
 
+    <EditText
+        android:id="@+id/etCity"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginRight="5dp"
+        android:background="@drawable/edit_text_style"
+        android:ellipsize="start"
+        android:hint="Введите город"
+        android:inputType="text"
+        android:paddingStart="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
+
     <Button
         android:id="@+id/resultBtn"
         android:layout_width="match_parent"

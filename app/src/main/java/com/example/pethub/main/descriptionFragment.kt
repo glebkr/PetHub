@@ -9,7 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import com.example.pethub.R
 import com.example.pethub.viewmodel.ViewModel
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_description.*
+import kotlinx.android.synthetic.main.fragment_profile.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,6 +52,9 @@ class descriptionFragment : Fragment() {
         tvAdTitle.text = sharedPrefs?.getString("title", "")
         tvAdPrice.text = "Цена: " + sharedPrefs?.getString("price", "")
         tvAdCity.text = "Город: " + sharedPrefs?.getString("city", "")
+        if (!sharedPrefs?.getString("url","").isNullOrEmpty()) {
+            Picasso.get().load(sharedPrefs?.getString("url","")).into(ivAd)
+        }
         //Toast.makeText(requireContext(), "${arguments?.getString("title")}", Toast.LENGTH_SHORT).show()
         /*
         arguments?.let {
@@ -59,6 +64,12 @@ class descriptionFragment : Fragment() {
         }
          */
 
+    }
+
+    override fun onStop() {
+        super.onStop()
+        val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        sharedPrefs?.edit()?.putString("url","")?.apply()
     }
     companion object {
         /**

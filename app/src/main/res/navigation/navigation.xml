@@ -7,51 +7,86 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.example.pethub.main.loginFragment"
-        android:label="fragment_login"
-        tools:layout="@layout/fragment_login" />
+        android:label="Авторизация"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.pethub.main.profileFragment"
-        android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        android:label="Профиль"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_userAdsFragment"
+            app:destination="@id/userAdsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/mapsFragment"
         android:name="com.example.pethub.main.MapsFragment"
-        android:label="fragment_maps"
+        android:label="Карты"
         tools:layout="@layout/fragment_maps" />
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.pethub.main.homeFragment"
-        android:label="fragment_home"
+        android:label="Главная"
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_filterFragment"
             app:destination="@id/filterFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_descriptionFragment"
+            app:destination="@id/descriptionFragment" />
     </fragment>
     <fragment
         android:id="@+id/favoriteFragment"
         android:name="com.example.pethub.main.favoriteFragment"
-        android:label="fragment_favorite"
-        tools:layout="@layout/fragment_favorite" />
+        android:label="Избранные"
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_descriptionFragment"
+            app:destination="@id/descriptionFragment" />
+    </fragment>
     <fragment
         android:id="@+id/addFragment"
         android:name="com.example.pethub.main.addFragment"
-        android:label="fragment_add"
+        android:label="Создать объявление"
         tools:layout="@layout/fragment_add" />
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.pethub.main.signUpFragment"
-        android:label="fragment_sign_up"
-        tools:layout="@layout/fragment_sign_up" />
+        android:label="Регистрация"
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/action_signUpFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
     <fragment
         android:id="@+id/descriptionFragment"
         android:name="com.example.pethub.main.descriptionFragment"
-        android:label="fragment_description"
-        tools:layout="@layout/fragment_description" />
+        android:label="Описание объявления"
+        tools:layout="@layout/fragment_description" >
+        <action
+            android:id="@+id/action_descriptionFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment" />
+        <action
+            android:id="@+id/action_descriptionFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/filterFragment"
         android:name="com.example.pethub.main.filterFragment"
-        android:label="fragment_filter"
+        android:label="Фильтрация"
         tools:layout="@layout/fragment_filter" >
         <action
             android:id="@+id/action_filterFragment_to_homeFragment"
@@ -60,16 +95,27 @@
     <fragment
         android:id="@+id/userAdsFragment"
         android:name="com.example.pethub.main.userAdsFragment"
-        android:label="fragment_user_ads"
-        tools:layout="@layout/fragment_user_ads" />
+        android:label="Мои объявления"
+        tools:layout="@layout/fragment_user_ads" >
+        <action
+            android:id="@+id/action_userAdsFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_userAdsFragment_to_editFragment"
+            app:destination="@id/editFragment" />
+    </fragment>
     <fragment
         android:id="@+id/editFragment"
         android:name="com.example.pethub.main.editFragment"
-        android:label="fragment_edit"
+        android:label="Редактировать объявление"
         tools:layout="@layout/fragment_edit" />
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.example.pethub.main.editProfileFragment"
-        android:label="fragment_edit_profile"
-        tools:layout="@layout/fragment_edit_profile" />
+        android:label="Редактировать профиль"
+        tools:layout="@layout/fragment_edit_profile" >
+        <action
+            android:id="@+id/action_editProfileFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
 </navigation>
