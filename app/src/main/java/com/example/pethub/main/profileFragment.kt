@@ -47,6 +47,9 @@ class profileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progress?.visibility = ProgressBar.VISIBLE
+        val sharedPrefs =
+            activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        val token = sharedPrefs!!.getString("token", "")
         viewModel.userInfo.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 tvName?.text = it.name
@@ -57,11 +60,10 @@ class profileFragment : Fragment() {
                 if (!it.url.isNullOrEmpty()) {
                     Picasso.get().load(it.url).into(ivUser)
                 }
+            } else {
+                viewModel.getUserInfo("Bearer " + token)
             }
     })
-        val sharedPrefs =
-            activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
-        val token = sharedPrefs!!.getString("token", "")
         Log.e("TOKEN", token!!)
         if (token.isEmpty()) {
             findNavController().navigate(R.id.loginFragment)

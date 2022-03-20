@@ -1,6 +1,9 @@
 package com.example.pethub.main
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,13 +18,20 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.pethub.R
+import com.example.pethub.main.ChoosePhoto.Companion.createBitmapFromResult
 import com.example.pethub.retrofit.AdPost
 import com.example.pethub.retrofit.Kind
 import com.example.pethub.viewmodel.ViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.feed_item.*
+import kotlinx.android.synthetic.main.fragment_add.*
 import kotlinx.android.synthetic.main.fragment_edit.*
 import kotlinx.android.synthetic.main.fragment_profile.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 
 // TODO: Rename parameter arguments, choose names that match
@@ -41,6 +51,7 @@ class editFragment : Fragment() {
     val viewModel by activityViewModels<ViewModel>()
     val kindList = mutableListOf<String>("Выберите вид")
     val fullKindList = mutableListOf<Kind>()
+    var fileUri: Uri? = null
     var id: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +72,7 @@ class editFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        imageViewEditAd.setOnClickListener { startActivityForResult(ChoosePhoto.loadPhotoFromDevice(), 111) }
 
         viewModel.ad.observe(viewLifecycleOwner, Observer {
             if (it != null) {
@@ -182,9 +194,39 @@ class editFragment : Fragment() {
                 val title = editTitleTv.text.toString().trim()
                 val location = editTvLocation.text.toString().trim()
                 val price = editPriceTv.text.toString().trim()
-                val adData = AdPost(title, type, kind, price, "Пушкина 33", "Пушкина 33", location, ByteArrayOutputStream())
-                viewModel._userAdsList.postValue(null)
-                id?.let { id -> viewModel.updateUsersAd("Bearer " + token, id, adData) }
+                fileUri?.let {
+                    val originalFile = com.example.pethub.main.FileUtils.getFile(requireContext(), fileUri)
+                    val requestBody = originalFile.asRequestBody(
+                        requireContext().contentResolver.getType(it)
+                            .toString().toMediaTypeOrNull()
+                    )
+                    val photo = MultipartBody.Part.createFormData("image", originalFile.name, requestBody)
+                    id?.let { it1 ->
+                        viewModel.updateUsersAd("Bearer " + token,
+                            it1,
+                            title.toRequestBody(MultipartBody.FORM),
+                            type.toString().toRequestBody(MultipartBody.FORM),
+                            kind.toString().toRequestBody(MultipartBody.FORM),
+                            location.toRequestBody(MultipartBody.FORM), photo,
+                            "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                            "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                            price.toRequestBody(MultipartBody.FORM),
+                            "".toRequestBody(MultipartBody.FORM)
+                        )
+                    }
+                } ?: id?.let { it1 ->
+                    viewModel.updateUsersAd("Bearer " + token,
+                        it1,
+                        title.toRequestBody(MultipartBody.FORM),
+                        type.toString().toRequestBody(MultipartBody.FORM),
+                        kind.toString().toRequestBody(MultipartBody.FORM),
+                        location.toRequestBody(MultipartBody.FORM), null,
+                        "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                        "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                        price.toRequestBody(MultipartBody.FORM),
+                        "".toRequestBody(MultipartBody.FORM)
+                    )
+                }
                 viewModel._userAdsList.postValue(null)
                 findNavController().navigate(R.id.userAdsFragment)
             }
@@ -193,6 +235,15 @@ class editFragment : Fragment() {
             Toast.makeText(requireContext(), "Пожалуйста, авторизуйтесь", Toast.LENGTH_SHORT).show()
         }
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 111 && resultCode == Activity.RESULT_OK && data != null) {
+            val imageBitmap = data.createBitmapFromResult(requireActivity())
+            fileUri = data.data
+            imageViewEditAd.setImageBitmap(imageBitmap)
+        }
     }
 
     override fun onStop() {

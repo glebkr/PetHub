@@ -15,12 +15,12 @@
         android:id="@+id/addFragment"
         android:title="Добавить"
         android:icon="@drawable/ic_add_circle" />
-    <!--
+
     <item
         android:id="@+id/mapsFragment"
         android:title="Карта"
         android:icon="@drawable/ic_map" />
-    !-->
+
     <item
         android:id="@+id/profileFragment"
         android:title="Профиль"

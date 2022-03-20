@@ -19,10 +19,12 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.example.pethub.R
+import com.example.pethub.main.ChoosePhoto.Companion.createBitmapFromResult
 import com.example.pethub.retrofit.Kind
 import com.example.pethub.viewmodel.ViewModel
 import kotlinx.android.synthetic.main.fragment_add.*
@@ -32,6 +34,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileNotFoundException
@@ -165,10 +168,11 @@ class addFragment : Fragment() {
             val location = tvLocation.text.toString().trim()
             val price = priceTv.text.toString().trim()
             if (title.isNotEmpty() && location.isNotEmpty() && price.isNotEmpty() && type != null && kind != null) {
+                /*
                 val bitmapByteArray = ByteArrayOutputStream()
                 bitmapImg?.compress(Bitmap.CompressFormat.JPEG, 80, bitmapByteArray)
                 //val adData = AdPost(title, type, kind, price,"Пушкина 33", "Пушкина 33", location, bitmapByteArray)
-                /*
+
                 var map = HashMap<String, MultipartBody.Part>()
 
 
@@ -182,14 +186,34 @@ class addFragment : Fragment() {
                 map["description"] = RequestBody.create(MultipartBody.FORM, "")
                  */
                 //map["image"] = requestBody
+
+                fileUri?.let {
                 val originalFile = com.example.pethub.main.FileUtils.getFile(requireContext(), fileUri)
-                val requestBody =  RequestBody.create(
-                    requireContext().contentResolver.getType(fileUri!!)
-                        .toString().toMediaTypeOrNull(), originalFile)
+                val requestBody = originalFile.asRequestBody(
+                    requireContext().contentResolver.getType(it)
+                        .toString().toMediaTypeOrNull()
+                )
                 val photo = MultipartBody.Part.createFormData("image", originalFile.name, requestBody)
-                viewModel.postAd("Bearer " + token, RequestBody.create(MultipartBody.FORM, title), RequestBody.create(MultipartBody.FORM, type.toString()),
-                    RequestBody.create(MultipartBody.FORM, kind.toString()), RequestBody.create(MultipartBody.FORM, location), photo, RequestBody.create(MultipartBody.FORM, "Пушкина 33"), RequestBody.create(MultipartBody.FORM, "Пушкина 33"),
-                    RequestBody.create(MultipartBody.FORM, price), RequestBody.create(MultipartBody.FORM, ""))
+                viewModel.postAd("Bearer " + token,
+                    title.toRequestBody(MultipartBody.FORM),
+                    type.toString().toRequestBody(MultipartBody.FORM),
+                    kind.toString().toRequestBody(MultipartBody.FORM),
+                    location.toRequestBody(MultipartBody.FORM), photo,
+                    "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                    "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                    price.toRequestBody(MultipartBody.FORM),
+                    "".toRequestBody(MultipartBody.FORM)
+                )
+                    } ?: viewModel.postAd("Bearer " + token,
+                    title.toRequestBody(MultipartBody.FORM),
+                    type.toString().toRequestBody(MultipartBody.FORM),
+                    kind.toString().toRequestBody(MultipartBody.FORM),
+                    location.toRequestBody(MultipartBody.FORM), null,
+                    "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                    "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                    price.toRequestBody(MultipartBody.FORM),
+                    "".toRequestBody(MultipartBody.FORM)
+                )
                 /*
                 viewModel.postAd("Bearer " + token, MultipartBody.Part.createFormData("title", title), MultipartBody.Part.createFormData("type_id",
                     type.toString()), MultipartBody.Part.createFormData("animal_kind", kind.toString()), MultipartBody.Part.createFormData("city", location), photo,
@@ -232,40 +256,6 @@ class addFragment : Fragment() {
         }
     }
 
-    private fun decodeBitmap(uri: Uri, activity: Activity): Bitmap? {
-        return try {
-            val options = BitmapFactory.Options()
-            options.inJustDecodeBounds = true
-            BitmapFactory.decodeStream(activity.contentResolver.openInputStream(uri), null, options)
-            var scale = 1
-            while (options.outWidth / scale / 2 >= 2000 && options.outHeight / scale / 2 >= 2000) scale *= 2
-
-            val scaleOptions = BitmapFactory.Options()
-            scaleOptions.inSampleSize = scale
-            BitmapFactory.decodeStream(activity.contentResolver.openInputStream(uri), null, scaleOptions)
-        } catch (e: FileNotFoundException) {
-            null
-        }
-    }
-    var bitmapImg: Bitmap? = null
-    fun Intent.createBitmapFromResult(activity: Activity): Bitmap? {
-        val intentBundle = this.extras
-        val intentUri = this.data
-        var bitmap: Bitmap? = null
-        if (intentBundle != null) {
-            bitmap = (intentBundle.get("data") as? Bitmap)
-            /*?.apply {
-                compress(Bitmap.CompressFormat.JPEG, 75, ByteArrayOutputStream())
-            }
-                 */
-        }
-        if (bitmap == null && intentUri != null) {
-            intentUri.let { bitmap = decodeBitmap(intentUri, activity) }
-        }
-        bitmapImg = bitmap
-        return bitmap
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 111 && resultCode == Activity.RESULT_OK && data != null) {
@@ -275,34 +265,11 @@ class addFragment : Fragment() {
         }
     }
 
-    private fun loadPhotoFromDevice() {
-        /*
-        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).takeIf { intent ->
-            intent.resolveActivity(requireActivity().packageManager) != null
-        }
-
-         */
-
-        val galleryIntent = Intent(Intent.ACTION_PICK).apply { this.type = "image/*" }
-
-        val intentChooser = Intent(Intent.ACTION_CHOOSER).apply {
-            this.putExtra(Intent.EXTRA_INTENT, galleryIntent)
-            /*
-            cameraIntent?.let { intent ->
-                this.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayListOf(intent).toTypedArray<Parcelable>())
-            }
-
-             */
-            this.putExtra(Intent.EXTRA_TITLE, "Выбор действия")
-        }
-        startActivityForResult(intentChooser, 111)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getSpinnerData()
         bthAdd.setOnClickListener { addButtonPress() }
-        ivAdPhoto.setOnClickListener { loadPhotoFromDevice() }
+        ivAdPhoto.setOnClickListener { startActivityForResult(ChoosePhoto.loadPhotoFromDevice(), 111) }
     }
 
     companion object {

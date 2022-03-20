@@ -11,8 +11,9 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="335dp"
-        android:layout_height="400dp"
+        android:layout_width="350dp"
+        android:layout_height="500dp"
+        android:layout_marginBottom="60dp"
         android:gravity="center_horizontal|center_vertical"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -21,15 +22,24 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.335">
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivSignUser"
+            android:layout_width="115dp"
+            android:layout_height="115dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:src="@color/lightGrey"
+            app:civ_border_width="1dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <EditText
             android:id="@+id/etName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints="name"
-            android:ems="12"
             android:hint="Имя"
             android:inputType="textPersonName"
-            android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.481"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,14 +47,12 @@
 
         <EditText
             android:id="@+id/etPassword"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:autofillHints="password"
-            android:ems="12"
             android:hint="Пароль"
             android:inputType="textPassword"
-            android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.481"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,11 +60,10 @@
 
         <EditText
             android:id="@+id/etPhone"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:autofillHints="phone"
-            android:ems="12"
             android:hint="Номер телефона"
             android:inputType="phone"
             android:minHeight="48dp"
@@ -67,14 +74,12 @@
 
         <EditText
             android:id="@+id/etLogin"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:autofillHints="emailAddress"
-            android:ems="12"
             android:hint="Логин"
             android:inputType="textEmailAddress"
-            android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.481"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,14 +87,12 @@
 
         <EditText
             android:id="@+id/etConfirmPassword"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:autofillHints="password"
-            android:ems="12"
             android:hint="Подтвердите пароль"
             android:inputType="textPassword"
-            android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.481"
             app:layout_constraintStart_toStartOf="parent"
@@ -97,14 +100,12 @@
 
         <EditText
             android:id="@+id/etCity"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:autofillHints="name"
-            android:ems="12"
             android:hint="Город"
             android:inputType="text"
-            android:minHeight="48dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.481"
             app:layout_constraintStart_toStartOf="parent"

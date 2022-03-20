@@ -24,13 +24,15 @@ interface ApiDataInterface {
     @Multipart
     @POST("/ad")
     fun postAd(@Header("Authorization") auth: String, @Part("title") title: RequestBody, @Part("type_id") typeId: RequestBody, @Part("animal_kind") animalId: RequestBody, @Part("city") city: RequestBody,
-               @Part image: MultipartBody.Part, @Part("x_coord") x_coord: RequestBody, @Part("y_coord") y_coord: RequestBody, @Part("price") price: RequestBody, @Part("description") description: RequestBody) : Call<Void>
+               @Part image: MultipartBody.Part?, @Part("x_coord") x_coord: RequestBody, @Part("y_coord") y_coord: RequestBody, @Part("price") price: RequestBody, @Part("description") description: RequestBody) : Call<Void>
 
     @DELETE("/ad/favorite/{id}")
     fun delFavAd(@Header("Authorization") auth: String, @Path("id") id: Int) : Call<Void>
 
+    @Multipart
     @POST("/user")
-    fun signUp(@Body signUpInfo: SignUpInfo) : Call<Void>
+    fun signUp(@Part("name") name: RequestBody, @Part("password") password: RequestBody, @Part("phone") phone: RequestBody,
+               @Part("login") login: RequestBody, @Part("email") email: RequestBody, @Part("city") city: RequestBody, @Part image: MultipartBody.Part?) : Call<Void>
 
     @GET("/kind")
     fun getKinds() : Call<MutableList<Kind>>
@@ -44,9 +46,14 @@ interface ApiDataInterface {
     @DELETE("/ad/{id}")
     fun deleteUsersAd(@Header("Authorization") auth: String, @Path("id") id: Int) : Call<Void>
 
+    @Multipart
     @PATCH("/ad/{id}")
-    fun updateUsersAd(@Header("Authorization") auth: String, @Path("id") id: Int, @Body adData: AdPost) : Call<Void>
+    fun updateUsersAd(@Header("Authorization") auth: String, @Path("id") id: Int, @Part("title") title: RequestBody, @Part("type_id") typeId: RequestBody, @Part("animal_kind") animalId: RequestBody, @Part("city") city: RequestBody,
+                      @Part image: MultipartBody.Part?, @Part("x_coord") x_coord: RequestBody, @Part("y_coord") y_coord: RequestBody, @Part("price") price: RequestBody, @Part("description") description: RequestBody) : Call<Void>
 
+    @Multipart
     @PATCH("/user")
-    fun updateUser(@Header("Authorization") auth: String, @Body userUpdateInfo: UserUpdateInfo) : Call<Void>
- }
+    fun updateUser(@Header("Authorization") auth: String,  @Part("name") name: RequestBody, @Part("phone") phone: RequestBody,
+                   @Part("login") login: RequestBody, @Part("email") email: RequestBody, @Part("city") city: RequestBody, @Part image: MultipartBody.Part?) : Call<Void>
+
+}

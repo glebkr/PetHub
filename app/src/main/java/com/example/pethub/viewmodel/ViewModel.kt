@@ -14,6 +14,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
+import retrofit2.http.Part
 import java.lang.Exception
 
 class ViewModel(application: Application): AndroidViewModel(application) {
@@ -181,7 +182,7 @@ class ViewModel(application: Application): AndroidViewModel(application) {
 
     fun postAd(
         auth: String, title: RequestBody, typeId: RequestBody, animalId: RequestBody, city: RequestBody,
-        image: MultipartBody.Part, x_coord: RequestBody, y_coord: RequestBody, price: RequestBody, description: RequestBody) {
+        image: MultipartBody.Part?, x_coord: RequestBody, y_coord: RequestBody, price: RequestBody, description: RequestBody) {
         viewModelScope.launch {
             try {
                 rep.postAd(auth, title, typeId, animalId, city, image, x_coord, y_coord, price, description).enqueue(object : retrofit2.Callback<Void> {
@@ -201,11 +202,13 @@ class ViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    fun signUp(signUpInfo: SignUpInfo) {
+    fun signUp(name: RequestBody, password: RequestBody, phone: RequestBody,
+               login: RequestBody, email: RequestBody, city: RequestBody, image: MultipartBody.Part?) {
         viewModelScope.launch {
             try {
-                rep.signUp(signUpInfo).enqueue(object : retrofit2.Callback<Void> {
+                rep.signUp(name, password, phone, login, email, city, image).enqueue(object : retrofit2.Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                        Toast.makeText(context, "Пользователь создан!", Toast.LENGTH_SHORT).show()
                     }
 
                     override fun onFailure(call: Call<Void>, t: Throwable) {
@@ -336,10 +339,11 @@ class ViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    fun updateUsersAd(auth: String, id: Int, adData: AdPost) {
+    fun updateUsersAd(auth: String, id: Int, title: RequestBody, typeId: RequestBody, animalId: RequestBody, city: RequestBody,
+                      image: MultipartBody.Part?,  x_coord: RequestBody, y_coord: RequestBody, price: RequestBody, description: RequestBody) {
         viewModelScope.launch {
             try {
-                rep.updateUsersAd(auth, id, adData).enqueue(object : retrofit2.Callback<Void> {
+                rep.updateUsersAd(auth, id, title, typeId, animalId, city, image, x_coord, y_coord, price, description).enqueue(object : retrofit2.Callback<Void> {
                     override fun onResponse(
                         Call: Call<Void>,
                         response: Response<Void>
@@ -397,10 +401,11 @@ class ViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    fun updateUser(auth: String, userUpdateInfo: UserUpdateInfo) {
+    fun updateUser(auth: String, name: RequestBody, phone: RequestBody, login: RequestBody, email: RequestBody,
+                   city: RequestBody, image: MultipartBody.Part?) {
         viewModelScope.launch {
             try {
-                rep.updateUser(auth, userUpdateInfo).enqueue(object : retrofit2.Callback<Void> {
+                rep.updateUser(auth, name, phone, login, email, city, image).enqueue(object : retrofit2.Callback<Void> {
                     override fun onResponse(
                         call: Call<Void>,
                         response: Response<Void>
