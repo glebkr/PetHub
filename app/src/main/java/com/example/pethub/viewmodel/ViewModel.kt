@@ -152,7 +152,7 @@ class ViewModel(application: Application): AndroidViewModel(application) {
                     }
 
                     override fun onFailure(call: Call<MutableList<Ad>>, t: Throwable) {
-                        Toast.makeText(context, "Неудача, попробуйте еще раз", Toast.LENGTH_SHORT).show()
+                         Toast.makeText(context, "Неудача, попробуйте еще раз", Toast.LENGTH_SHORT).show()
                     }
 
                 })
@@ -256,7 +256,7 @@ class ViewModel(application: Application): AndroidViewModel(application) {
                         response: Response<MutableList<Ad>>
                     ) {
                         val resp = response.body()
-                        if (resp!!.size != 0) {
+                        if (resp?.size != 0) {
                             _filteredList.postValue(resp)
                         } else {
                             Toast.makeText(context, "Ничего не найдено", Toast.LENGTH_LONG).show()

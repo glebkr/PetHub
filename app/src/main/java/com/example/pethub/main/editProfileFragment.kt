@@ -65,7 +65,7 @@ class editProfileFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 111 && resultCode == Activity.RESULT_OK && data != null) {
-            val imageBitmap = data.createBitmapFromResult(requireActivity())
+            val imageBitmap = data.createBitmapFromResult(requireActivity(), "", "")
             fileUri = data.data
             ivUserEdit.setImageBitmap(imageBitmap)
         }
@@ -103,7 +103,7 @@ class editProfileFragment : Fragment() {
                             .toString().toMediaTypeOrNull()
                     )
                 val photo =
-                    MultipartBody.Part.createFormData("image", originalFile.name, requestBody)
+                    MultipartBody.Part.createFormData("avatar", originalFile.name, requestBody)
                 viewModel.updateUser(
                     "Bearer " + token,
                     name.toRequestBody(MultipartBody.FORM),
@@ -127,8 +127,6 @@ class editProfileFragment : Fragment() {
                 null
             )
             viewModel._userInfo.postValue(null)
-            viewModel.getUserInfo("Bearer " + token)
-            findNavController().navigate(R.id.profileFragment)
         }
     }
 

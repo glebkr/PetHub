@@ -77,6 +77,7 @@ class addFragment : Fragment() {
     }
 
     private fun getSpinnerData() {
+        val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         val items = arrayOf("Выберите тип","Продажа", "Покупка", "Утерян", "Найден")
         val spinnerAddTypeAdapter = object : ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, items) {
             override fun isEnabled(position: Int): Boolean {
@@ -99,13 +100,20 @@ class addFragment : Fragment() {
         }
         spinnerAddTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerAddType.adapter = spinnerAddTypeAdapter
+
         spinnerAddType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, v: View?, position: Int, id: Long) {
                 when (position) {
                     1 -> type = 1
                     2 -> type = 2
                     3 -> type = 3
-                    4 -> type = 4
+                    4 -> {
+                        type = 4
+                        if (sharedPrefs?.getString("x_coord", "").isNullOrEmpty() && sharedPrefs?.getString("y_coord", "").isNullOrEmpty()) {
+                            sharedPrefs?.edit()?.putBoolean("add", true)?.apply()
+                            findNavController().navigate(R.id.mapsFragment)
+                        }
+                    }
                 }
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -199,8 +207,8 @@ class addFragment : Fragment() {
                     type.toString().toRequestBody(MultipartBody.FORM),
                     kind.toString().toRequestBody(MultipartBody.FORM),
                     location.toRequestBody(MultipartBody.FORM), photo,
-                    "Пушкина 33".toRequestBody(MultipartBody.FORM),
-                    "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                    (if (type == 4) sharedPrefs.getString("x_coord", "") else "")!!.toRequestBody(MultipartBody.FORM),
+                    (if (type == 4) sharedPrefs.getString("y_coord", "") else "")!!.toRequestBody(MultipartBody.FORM),
                     price.toRequestBody(MultipartBody.FORM),
                     "".toRequestBody(MultipartBody.FORM)
                 )
@@ -209,8 +217,8 @@ class addFragment : Fragment() {
                     type.toString().toRequestBody(MultipartBody.FORM),
                     kind.toString().toRequestBody(MultipartBody.FORM),
                     location.toRequestBody(MultipartBody.FORM), null,
-                    "Пушкина 33".toRequestBody(MultipartBody.FORM),
-                    "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                    (if (type == 4) sharedPrefs.getString("x_coord", "") else "")!!.toRequestBody(MultipartBody.FORM),
+                    (if (type == 4) sharedPrefs.getString("y_coord", "") else "")!!.toRequestBody(MultipartBody.FORM),
                     price.toRequestBody(MultipartBody.FORM),
                     "".toRequestBody(MultipartBody.FORM)
                 )
@@ -234,6 +242,11 @@ class addFragment : Fragment() {
                         spinnerAddKind.setSelection(0)
                     }
                 }
+                sharedPrefs.edit().apply {
+                    putString("x_coord", "")
+                    putString("y_coord", "")
+                    putBoolean("add", false)
+                }.apply()
             } else if (type == null && kind == null) {
                 Toast.makeText(
                     requireContext(),
@@ -258,8 +271,15 @@ class addFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
         if (requestCode == 111 && resultCode == Activity.RESULT_OK && data != null) {
-            val imageBitmap = data.createBitmapFromResult(requireActivity())
+            val imageBitmap = sharedPrefs?.getString("x_coord", "")?.let {
+                sharedPrefs.getString("y_coord", "")?.let { it1 ->
+                    data.createBitmapFromResult(requireActivity(),
+                        it, it1
+                    )
+                }
+            }
             fileUri = data.data
             ivAdPhoto.setImageBitmap(imageBitmap)
         }
@@ -272,6 +292,10 @@ class addFragment : Fragment() {
         ivAdPhoto.setOnClickListener { startActivityForResult(ChoosePhoto.loadPhotoFromDevice(), 111) }
     }
 
+    override fun onStop() {
+        super.onStop()
+
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of

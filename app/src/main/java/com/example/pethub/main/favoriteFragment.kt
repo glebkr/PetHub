@@ -55,6 +55,10 @@ class favoriteFragment : Fragment() {
         viewModel._favAdList.postValue(null)
         progress?.visibility = ProgressBar.VISIBLE
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        sharedPrefs?.edit()?.apply {
+            putString("x_coord", "")
+            putString("y_coord", "")
+        }?.apply()
         val token = sharedPrefs?.getString("token", "")
         val adapter = FavoriteAdapter(mutableListOf())
         rvFavorite.adapter = adapter
@@ -102,6 +106,8 @@ class favoriteFragment : Fragment() {
                     putString("title", adapter.list[position].title)
                     putString("price", adapter.list[position].price)
                     putString("city", adapter.list[position].city)
+                    putString("userName", adapter.list[position].userName)
+                    putString("phone", adapter.list[position].phone)
                     if (!adapter.list[position].url.isNullOrEmpty()) {
                         putString("url", adapter.list[position].url)
                     }

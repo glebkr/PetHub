@@ -123,6 +123,8 @@ class userAdsFragment : Fragment() {
                     putString("title", adapter.list[position].title)
                     putString("price", adapter.list[position].price)
                     putString("city", adapter.list[position].city)
+                    putString("userName", adapter.list[position].userName)
+                    putString("phone", adapter.list[position].phone)
                     if (!adapter.list[position].url.isNullOrEmpty()) {
                         putString("url", adapter.list[position].url)
                     }

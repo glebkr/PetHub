@@ -39,7 +39,6 @@ class homeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private val viewModel by activityViewModels<ViewModel>()
-    private val secondAdList = mutableListOf<Ad>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +78,10 @@ class homeFragment : Fragment() {
                 10);
         }
         val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        sharedPrefs?.edit()?.apply {
+            putString("x_coord", "")
+            putString("y_coord", "")
+        }?.apply()
         val adapter = FeedAdapter(mutableListOf(), mutableListOf())
         val token = sharedPrefs?.getString("token", "")
         if (token!!.isNotEmpty()) {
@@ -166,10 +169,11 @@ class homeFragment : Fragment() {
                     putString("title", adapter.list[position].title)
                     putString("price", adapter.list[position].price)
                     putString("city", adapter.list[position].city)
+                    putString("userName", adapter.list[position].userName)
+                    putString("phone", adapter.list[position].phone)
                     if (!adapter.list[position].url.isNullOrEmpty()) {
                         putString("url", adapter.list[position].url)
                     }
-
                 }.apply()
                 // argument.newInstance(it[position].title, it[position].price, it[position].x_coord)
                findNavController().navigate(R.id.descriptionFragment)

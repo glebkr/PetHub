@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.fragment.app.FragmentActivity
 import java.io.FileNotFoundException
@@ -28,7 +29,12 @@ class ChoosePhoto {
         }
 
         var bitmapImg: Bitmap? = null
-        fun Intent.createBitmapFromResult(activity: Activity): Bitmap? {
+        fun Intent.createBitmapFromResult(activity: Activity, x: String, y: String): Bitmap? {
+            val sharedPrefs = activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+            sharedPrefs.edit().apply {
+                putString("x_coord", x)
+                putString("y_coord", y)
+            }.apply()
             val intentBundle = this.extras
             val intentUri = this.data
             var bitmap: Bitmap? = null

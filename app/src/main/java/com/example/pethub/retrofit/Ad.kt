@@ -12,4 +12,6 @@ class Ad {
     var city: String? = null
     var x_coord: String? = null
     var y_coord: String? = null
+    var userName: String? = null
+    var phone: String? = null
 }

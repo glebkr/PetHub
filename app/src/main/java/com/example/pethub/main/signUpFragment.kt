@@ -50,7 +50,7 @@ class signUpFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 111 && resultCode == Activity.RESULT_OK && data != null) {
-            val imageBitmap = data.createBitmapFromResult(requireActivity())
+            val imageBitmap = data.createBitmapFromResult(requireActivity(), "", "")
             fileUri = data.data
             ivSignUser.setImageBitmap(imageBitmap)
         }
@@ -85,7 +85,7 @@ class signUpFragment : Fragment() {
                                     .toString().toMediaTypeOrNull(), originalFile
                             )
                             val photo =
-                                MultipartBody.Part.createFormData("image", originalFile.name, requestBody)
+                                MultipartBody.Part.createFormData("avatar", originalFile.name, requestBody)
                             viewModel.signUp(
                                 name.toRequestBody(MultipartBody.FORM),
                                 password

@@ -49,6 +49,10 @@ class profileFragment : Fragment() {
         progress?.visibility = ProgressBar.VISIBLE
         val sharedPrefs =
             activity?.getSharedPreferences("SharedPrefs", AppCompatActivity.MODE_PRIVATE)
+        sharedPrefs?.edit()?.apply {
+            putString("x_coord", "")
+            putString("y_coord", "")
+        }?.apply()
         val token = sharedPrefs!!.getString("token", "")
         viewModel.userInfo.observe(viewLifecycleOwner, Observer {
             if (it != null) {
@@ -64,8 +68,7 @@ class profileFragment : Fragment() {
                 viewModel.getUserInfo("Bearer " + token)
             }
     })
-        Log.e("TOKEN", token!!)
-        if (token.isEmpty()) {
+        if (token.isNullOrEmpty()) {
             findNavController().navigate(R.id.loginFragment)
         } else {
             viewModel.getUserInfo("Bearer " + token)

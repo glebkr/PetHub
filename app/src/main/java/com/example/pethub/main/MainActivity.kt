@@ -30,6 +30,9 @@ class MainActivity : AppCompatActivity() {
             putString("query", "")
             putString("type", "")
             putString("kind", "")
+            putString("x_coord", "")
+            putString("y_coord", "")
+            putBoolean("add", false)
         }.apply()
 
     }

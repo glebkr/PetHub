@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.example.pethub.R
 import com.example.pethub.viewmodel.ViewModel
 import com.squareup.picasso.Picasso
@@ -52,6 +54,8 @@ class descriptionFragment : Fragment() {
         tvAdTitle.text = sharedPrefs?.getString("title", "")
         tvAdPrice.text = "Цена: " + sharedPrefs?.getString("price", "")
         tvAdCity.text = "Город: " + sharedPrefs?.getString("city", "")
+        tvUserName.text = "Имя: " + sharedPrefs?.getString("userName", "")
+        tvAdPhone.text = "Номер телефона: " + sharedPrefs?.getString("phone", "")
         if (!sharedPrefs?.getString("url","").isNullOrEmpty()) {
             Picasso.get().load(sharedPrefs?.getString("url","")).into(ivAd)
         }

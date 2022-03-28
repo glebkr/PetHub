@@ -53,6 +53,8 @@ class editFragment : Fragment() {
     val fullKindList = mutableListOf<Kind>()
     var fileUri: Uri? = null
     var id: Int? = null
+    var x_coord : String  = ""
+    var y_coord : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +85,8 @@ class editFragment : Fragment() {
                 if (!it.url.isNullOrEmpty()) {
                     Picasso.get().load(it.url).into(imageViewEditAd)
                 }
+                x_coord = it.x_coord.toString()
+                y_coord = it.y_coord.toString()
             }
             viewModel._ad.postValue(null)
         })
@@ -208,8 +212,8 @@ class editFragment : Fragment() {
                             type.toString().toRequestBody(MultipartBody.FORM),
                             kind.toString().toRequestBody(MultipartBody.FORM),
                             location.toRequestBody(MultipartBody.FORM), photo,
-                            "Пушкина 33".toRequestBody(MultipartBody.FORM),
-                            "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                            x_coord.toRequestBody(MultipartBody.FORM),
+                            y_coord.toRequestBody(MultipartBody.FORM),
                             price.toRequestBody(MultipartBody.FORM),
                             "".toRequestBody(MultipartBody.FORM)
                         )
@@ -221,14 +225,13 @@ class editFragment : Fragment() {
                         type.toString().toRequestBody(MultipartBody.FORM),
                         kind.toString().toRequestBody(MultipartBody.FORM),
                         location.toRequestBody(MultipartBody.FORM), null,
-                        "Пушкина 33".toRequestBody(MultipartBody.FORM),
-                        "Пушкина 33".toRequestBody(MultipartBody.FORM),
+                        x_coord.toRequestBody(MultipartBody.FORM),
+                        y_coord.toRequestBody(MultipartBody.FORM),
                         price.toRequestBody(MultipartBody.FORM),
                         "".toRequestBody(MultipartBody.FORM)
                     )
                 }
                 viewModel._userAdsList.postValue(null)
-                findNavController().navigate(R.id.userAdsFragment)
             }
         } else {
             findNavController().navigate(R.id.loginFragment)
@@ -240,7 +243,7 @@ class editFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 111 && resultCode == Activity.RESULT_OK && data != null) {
-            val imageBitmap = data.createBitmapFromResult(requireActivity())
+            val imageBitmap = data.createBitmapFromResult(requireActivity(), "", "")
             fileUri = data.data
             imageViewEditAd.setImageBitmap(imageBitmap)
         }
